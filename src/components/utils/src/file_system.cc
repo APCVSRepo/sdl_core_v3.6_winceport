@@ -280,6 +280,20 @@ bool file_system::Write(
   return false;
 }
 
+#ifdef MODIFY_FUNCTION_SIGN
+bool file_system::Write(
+  const std::string& file_name, const std::string& data,
+  std::ios_base::openmode mode) {
+  std::ofstream file(file_name.c_str(), mode);
+  if (file.is_open()) {
+    file << data;
+    file.close();
+    return true;
+  }
+  return false;
+}
+#endif
+
 std::ofstream* file_system::Open(const std::string& file_name,
                                  std::ios_base::openmode mode) {
 

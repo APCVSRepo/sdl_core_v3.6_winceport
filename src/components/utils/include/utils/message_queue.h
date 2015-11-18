@@ -187,7 +187,7 @@ template<typename T, class Q> void MessageQueue<T, Q>::Reset() {
   shutting_down_ = false;
   if (!queue_.empty()) {
     Queue empty_queue;
-#ifdef OS_MAC
+#if defined(OS_MAC) || defined(OS_WINCE)
       queue_ = empty_queue;
 #else
     queue_.swap(empty_queue);

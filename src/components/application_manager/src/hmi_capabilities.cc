@@ -51,6 +51,8 @@ namespace application_manager {
 namespace Formatters = NsSmartDeviceLink::NsJSONHandler::Formatters;
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "HMICapabilities")
+
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_Language::eType> languages_enum_values;
 #else
@@ -82,16 +84,20 @@ std::map<std::string, hmi_apis::Common_Language::eType> languages_enum_values =
     {"NO_NO", hmi_apis::Common_Language::NO_NO}
 };
 #endif
+#endif
     
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
-    std::map<std::string, hmi_apis::Common_VrCapabilities::eType> vr_enum_capabilities;
+std::map<std::string, hmi_apis::Common_VrCapabilities::eType> vr_enum_capabilities;
 #else
 std::map<std::string, hmi_apis::Common_VrCapabilities::eType> vr_enum_capabilities =
 {
     {"TEXT", hmi_apis::Common_VrCapabilities::VR_TEXT}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_ButtonName::eType> button_enum_name;
 #else
@@ -117,7 +123,9 @@ std::map<std::string, hmi_apis::Common_ButtonName::eType> button_enum_name =
 
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_TextFieldName::eType> text_fields_enum_name;
 #else
@@ -152,7 +160,9 @@ std::map<std::string, hmi_apis::Common_TextFieldName::eType> text_fields_enum_na
     {"menuTitle"        , hmi_apis::Common_TextFieldName::menuTitle},
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_MediaClockFormat::eType> media_clock_enum_name;
 #else
@@ -167,7 +177,9 @@ std::map<std::string, hmi_apis::Common_MediaClockFormat::eType> media_clock_enum
     {"CLOCKTEXT4", hmi_apis::Common_MediaClockFormat::CLOCKTEXT4},
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_ImageType::eType> image_type_enum;
 #else
@@ -177,7 +189,9 @@ std::map<std::string, hmi_apis::Common_ImageType::eType> image_type_enum =
     {"DYNAMIC", hmi_apis::Common_ImageType::DYNAMIC}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_SamplingRate::eType> sampling_rate_enum;
 #else
@@ -189,7 +203,9 @@ std::map<std::string, hmi_apis::Common_SamplingRate::eType> sampling_rate_enum =
     {"44KHZ", hmi_apis::Common_SamplingRate::RATE_44KHZ}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_BitsPerSample::eType> bit_per_sample_enum;
 #else
@@ -199,7 +215,9 @@ std::map<std::string, hmi_apis::Common_BitsPerSample::eType> bit_per_sample_enum
     {"RATE_16_BIT", hmi_apis::Common_BitsPerSample::RATE_16_BIT}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_AudioType::eType> audio_type_enum;
 #else
@@ -208,7 +226,9 @@ std::map<std::string, hmi_apis::Common_AudioType::eType> audio_type_enum =
     {"PCM", hmi_apis::Common_AudioType::PCM}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_HmiZoneCapabilities::eType> hmi_zone_enum;
 #else
@@ -218,6 +238,9 @@ std::map<std::string, hmi_apis::Common_HmiZoneCapabilities::eType> hmi_zone_enum
     {"BACK", hmi_apis::Common_HmiZoneCapabilities::BACK},
 };
 #endif
+#endif
+
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_ImageFieldName::eType>
 image_field_name_enum;
@@ -239,7 +262,9 @@ image_field_name_enum =
         hmi_apis::Common_ImageFieldName::showConstantTBTNextTurnIcon}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_FileType::eType> file_type_enum;
 #else
@@ -255,7 +280,9 @@ const std::map<std::string, hmi_apis::Common_FileType::eType> file_type_enum =
     {"JSON", hmi_apis::Common_FileType::JSON}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_DisplayType::eType> display_type_enum;
 #else
@@ -273,7 +300,9 @@ const std::map<std::string, hmi_apis::Common_DisplayType::eType> display_type_en
     {"GEN3_8_INCH", hmi_apis::Common_DisplayType::GEN3_8_INCH}
 };
 #endif
+#endif
 
+#ifndef BUILD_TARGET_LIB
 #if defined(OS_MAC) || defined(OS_WINCE)
 std::map<std::string, hmi_apis::Common_CharacterSet::eType> character_set_enum;
 #else
@@ -284,6 +313,7 @@ const std::map<std::string, hmi_apis::Common_CharacterSet::eType> character_set_
     {"CID1SET" ,  hmi_apis::Common_CharacterSet::CID1SET},
     {"CID2SET" ,  hmi_apis::Common_CharacterSet::CID2SET}
 };
+#endif
 #endif
 
 HMICapabilities::HMICapabilities(ApplicationManagerImpl* const app_mngr)

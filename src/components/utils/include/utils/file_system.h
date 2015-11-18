@@ -114,7 +114,11 @@ bool FileExists(const std::string& name);
 bool Write(const std::string& file_name,
            const std::vector<uint8_t>& data,
            std::ios_base::openmode mode = std::ios_base::out);
-
+#ifdef MODIFY_FUNCTION_SIGN
+bool Write(const std::string& file_name,
+		   const std::string& data,
+           std::ios_base::openmode mode = std::ios_base::out);
+#endif
 /**
   * @brief Opens file stream for writing
   * @param file_name path to file to write data to

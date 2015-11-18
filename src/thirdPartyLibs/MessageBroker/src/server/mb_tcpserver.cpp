@@ -21,7 +21,12 @@
 
 #include "mb_tcpserver.hpp"
 #include "CMessageBroker.hpp"
-
+#ifdef SP_C9_PRIMA1
+#include "utils/global.h"
+#include "utils/file_system.h"
+#include "utils/date_time.h"
+#include <string>
+#endif
 namespace NsMessageBroker 
 {
 
@@ -129,6 +134,11 @@ namespace NsMessageBroker
          *pReceivingBuffer = std::string(&buf[0], nb);
          DBG_MSG(("pReceivingBuffer before onMessageReceived:%d : %s",
              pReceivingBuffer->size(), pReceivingBuffer->c_str()));
+#ifdef SP_C9_PRIMA1
+		 wchar_string strOut;
+		 Global::toUnicode(*pReceivingBuffer, CP_ACP, strOut);
+		 PRINTMSG(1, (L"\nreceive data %s, len is %d.\n", strOut.c_str(), pReceivingBuffer->size()));
+#endif
          // we need to check websocket clients here
          if (!checkWebSocketHandShake(fd, pReceivingBuffer))
          {//JSON MESSAGE received. Send data in CMessageBroker.
@@ -211,7 +221,10 @@ namespace NsMessageBroker
       } else
       {// create a new buffer...
          res = new std::string("");
+#ifdef SP_C9_PRIMA1
+#else
          printf("getBufferFor method!\n");
+#endif
          m_receivingBuffers.insert(std::map<int, std::string*>::value_type(fd, res));
       }
 

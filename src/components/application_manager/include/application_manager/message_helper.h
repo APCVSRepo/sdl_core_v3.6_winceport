@@ -428,6 +428,9 @@ class MessageHelper {
       ApplicationConstSharedPtr app);
 
     static bool PrintSmartObject(const smart_objects::SmartObject& object);
+#ifdef MODIFY_FUNCTION_SIGN
+	static bool ComPrintSmartObject(const smart_objects::SmartObject& object);
+#endif
 
     template<typename From, typename To>
     static To ConvertEnumAPINoCheck(const From& input) {

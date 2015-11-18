@@ -79,7 +79,11 @@ int TransportManagerDefault::Init() {
 #endif  // TIME_TESTER
   AddTransportAdapter(ta);
 #ifdef USB_SUPPORT
+#ifdef SP_C9_PRIMA1
+  ta = transport_adapter::UsbAoaAdapter::GetInstance();
+#else
   ta = new transport_adapter::UsbAoaAdapter();
+#endif
 #ifdef TIME_TESTER
   if (metric_observer_) {
     ta->SetTimeMetricObserver(metric_observer_);

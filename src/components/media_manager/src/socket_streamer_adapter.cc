@@ -30,6 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef OS_WIN32
+#include <WinSock2.h>
+#include <ws2tcpip.h>
+
+#else
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/select.h>
@@ -37,6 +42,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#endif
 #include <unistd.h>
 #include <string.h>
 #include "config_profile/profile.h"
@@ -44,7 +50,8 @@
 #include "utils/logger.h"
 
 #ifdef OS_WIN32
-// do nothing
+#   define MSG_NOSIGNAL 0
+#		define SHUT_RDWR 2
 #elif defined(OS_MAC)
 #   define MSG_NOSIGNAL SO_NOSIGPIPE
 #endif
@@ -65,7 +72,11 @@ SocketStreamerAdapter::~SocketStreamerAdapter() {
   streamer_ = NULL;
   delete thread_;
   if (socket_fd_ != -1) {
+#ifdef OS_WIN32
+	closesocket(socket_fd_);
+#else
     ::close(socket_fd_);
+#endif
   }
 }
 
@@ -179,7 +190,11 @@ void SocketStreamerAdapter::Streamer::threadMain() {
 		
     if (0 > new_socket_fd_) {
       LOG4CXX_ERROR(logger, "Socket is closed");
+#ifdef OS_WIN32
+			::Sleep(1000);
+#else
       sleep(1);
+#endif
       continue;
     }
 
@@ -236,8 +251,13 @@ void SocketStreamerAdapter::Streamer::start() {
   }
 
   int32_t optval = 1;
+#ifdef OS_WIN32
   if (-1 == setsockopt(server_->socket_fd_, SOL_SOCKET, SO_REUSEADDR,
-                       &optval, sizeof optval)) {
+                       (const char *)&optval, sizeof optval)) {
+#else
+	if (-1 == setsockopt(server_->socket_fd_, SOL_SOCKET, SO_REUSEADDR,
+		&optval, sizeof optval)) {
+#endif
     LOG4CXX_ERROR_EXT(logger, "Unable to set sockopt");
     return;
   }
@@ -283,7 +303,11 @@ void SocketStreamerAdapter::Streamer::stop() {
     return;
   }
 
+#ifdef OS_WIN32
+  if (-1 == closesocket(new_socket_fd_)) {
+#else
   if (-1 == ::close(new_socket_fd_)) {
+#endif
     LOG4CXX_ERROR(logger, "Unable to close socket");
     return;
   }
@@ -341,8 +365,13 @@ bool SocketStreamerAdapter::Streamer::send(
   }
 #endif
 
-  if (-1 == ::send(new_socket_fd_, (*msg).data(),
+#ifdef OS_WIN32
+	if (-1 == ::send(new_socket_fd_, (const char *)(*msg).data(),
                    (*msg).data_size(), MSG_NOSIGNAL)) {
+#else
+	if (-1 == ::send(new_socket_fd_, (*msg).data(),
+		(*msg).data_size(), MSG_NOSIGNAL)) {
+#endif
     LOG4CXX_ERROR_EXT(logger, " Unable to send");
     return false;
   }

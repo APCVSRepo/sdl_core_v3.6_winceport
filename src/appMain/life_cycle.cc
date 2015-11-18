@@ -38,6 +38,9 @@
 #include "utils/signals.h"
 #include "config_profile/profile.h"
 #include "resumption/last_state.h"
+#ifdef SP_C9_PRIMA1
+#include "utils/file_system.h"
+#endif
 
 using threads::Thread;
 
@@ -168,13 +171,26 @@ bool LifeCycle::InitMessageSystem() {
   } else {
     LOG4CXX_INFO(logger_, "Bind successful!");
   }
-
+#ifdef SP_C9_PRIMA1
+  std::string strLogString = "";
+  date_time::DateTime::getCurrentTimeString(strLogString);
+  strLogString += " message_broker_server_->Bind().\n";
+  //file_system::Write("Storage Card/sdl_log", strLogString, std::ios_base::app);
+  PRINTMSG(1, (L"message_broker_server_->Bind().\n"));
+#endif
   if (!message_broker_server_->Listen()) {
     LOG4CXX_FATAL(logger_, "Listen failed!");
     return false;
   } else {
     LOG4CXX_INFO(logger_, " Listen successful!");
   }
+#ifdef SP_C9_PRIMA1
+    std::string strLogString1 = "";
+  date_time::DateTime::getCurrentTimeString(strLogString1);
+  strLogString1 += " message_broker_server_->Listen().\n";
+  //file_system::Write("Storage Card/sdl_log", strLogString1, std::ios_base::app);
+  PRINTMSG(1, (L"message_broker_server_->Listen().\n"));
+#endif
 
   mb_adapter_ =
     new hmi_message_handler::MessageBrokerAdapter(
@@ -188,6 +204,9 @@ bool LifeCycle::InitMessageSystem() {
     LOG4CXX_INFO(logger_, "Cannot connect to remote peer!");
     return false;
   }
+#ifdef SP_C9_PRIMA1
+  PRINTMSG(1, (L"mb_adapter_->Connect().\n"));
+#endif
 
   LOG4CXX_INFO(logger_, "Start CMessageBroker thread!");
   mb_thread_ = new System::Thread(

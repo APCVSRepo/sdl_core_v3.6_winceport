@@ -30,9 +30,21 @@ set(LIBRARIES
 else(EXTENDED_MEDIA_MODE)
 set(default_includes
 )
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "WindowsCE")
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 set(default_sources
   ./src/video/video_stream_to_file_adapter.cc
+
+  ./src/video/socket_video_streamer_adapter.cc
+  ./src/socket_streamer_adapter.cc
+)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsCE")
+set(default_sources
+  ./src/video/video_stream_to_file_adapter.cc
+  
+  ./src/video/socket_video_streamer_adapter.cc
+  ./src/socket_streamer_adapter.cc
+  ./src/video/sharedmem_video_streamer_adapter.cc
+  ./src/sharedmem_streamer_adapter.cc
 )
 else()
 set(default_sources

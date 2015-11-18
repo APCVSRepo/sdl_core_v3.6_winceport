@@ -36,6 +36,17 @@
 #endif
 #include "formatters/CSmartFactory.hpp"
 
+#ifdef BUILD_TARGET_LIB
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_MSG_PARAMS("msg_params");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_PARAMS("params");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_FUNCTION_ID("function_id");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_MESSAGE_TYPE("message_type");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_PROTOCOL_VERSION("protocol_version");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_PROTOCOL_TYPE("protocol_type");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::S_CORRELATION_ID("correlation_id");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::kCode("code");
+std::string NsSmartDeviceLink::NsJSONHandler::strings::kMessage("message");
+#else
 const std::string NsSmartDeviceLink::NsJSONHandler::strings::S_MSG_PARAMS("msg_params");
 const std::string NsSmartDeviceLink::NsJSONHandler::strings::S_PARAMS("params");
 const std::string NsSmartDeviceLink::NsJSONHandler::strings::S_FUNCTION_ID("function_id");
@@ -46,3 +57,4 @@ const std::string NsSmartDeviceLink::NsJSONHandler::strings::S_CORRELATION_ID("c
 const std::string NsSmartDeviceLink::NsJSONHandler::strings::kCode("code");
 const std::string NsSmartDeviceLink::NsJSONHandler::strings::kMessage(
     "message");
+#endif

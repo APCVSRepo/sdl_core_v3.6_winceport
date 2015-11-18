@@ -69,8 +69,13 @@ UsbConnection::UsbConnection(const DeviceUID& device_uid,
       app_handle_(app_handle),
       controller_(controller),
       usb_handler_(usb_handler),
+#ifdef SP_C9_PRIMA1
+      libusb_device_(NULL),
+      device_handle_(NULL),
+#else
       libusb_device_(device->GetLibusbDevice()),
       device_handle_(device->GetLibusbHandle()),
+#endif
       in_endpoint_(0),
       in_endpoint_max_packet_size_(0),
       out_endpoint_(0),
@@ -157,6 +162,7 @@ void UsbConnection::OnInTransfer(libusb_transfer* transfer) {
 #endif
     RawMessageSptr data(new protocol_handler::RawMessage(
         0, 0, in_buffer_, transfer->actual_length));
+  //PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
     controller_->DataReceiveDone(device_uid_, app_handle_, data);
   } else {
     LOG4CXX_ERROR(logger_, "USB transfer failed: " << transfer->status);
@@ -288,6 +294,9 @@ TransportAdapter::Error UsbConnection::Disconnect() {
 }
 
 bool UsbConnection::Init() {
+#ifdef SP_C9_PRIMA1
+  controller_->ConnectDone(device_uid_, app_handle_);
+#else
   if (!FindEndpoints()) {
     return false;
   }
@@ -311,6 +320,7 @@ bool UsbConnection::Init() {
                                    CommunicationError());
     return true;
   }
+#endif
 
   return true;
 }

@@ -53,6 +53,7 @@
 #include "utils/logger.h"
 #ifdef MODIFY_FUNCTION_SIGN
 # include "utils/shared_ptr.h"
+# include "utils/global.h"
 #endif
 namespace application_manager {
 
@@ -2643,5 +2644,86 @@ bool MessageHelper::PrintSmartObject(const smart_objects::SmartObject& object) {
 #endif
   return true;
 }
+
+#ifdef MODIFY_FUNCTION_SIGN
+bool MessageHelper::ComPrintSmartObject(const smart_objects::SmartObject& object) {
+  static uint32_t tab = 0;
+  std::string tab_buffer;
+
+  if (tab == 0) {
+    PRINTMSG(1, (L"\n-------------------------------------------------------------"));
+  }
+
+  for (uint32_t i = 0; i < tab; ++i) {
+    tab_buffer += "\t";
+  }
+
+  switch (object.getType()) {
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Array: {
+      for (size_t i = 0; i < object.length(); i++) {
+        ++tab;
+
+		 wchar_string strOut1;
+		 Global::toUnicode(tab_buffer.c_str(), CP_ACP, strOut1);
+		 PRINTMSG(1, (L"\n%s%d: ", strOut1.c_str(), i));
+        if (!ComPrintSmartObject(object.getElement(i))) {
+          PRINTMSG(1, (L"\n"));
+          return false;
+        }
+      }
+      break;
+    }
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Map: {
+      std::set<std::string> keys = object.enumerate();
+
+      for (std::set<std::string>::const_iterator key = keys.begin();
+           key != keys.end(); key++) {
+        ++tab;
+
+		wchar_string strOut2;
+		 Global::toUnicode(tab_buffer.c_str(), CP_ACP, strOut2);
+		wchar_string strOut3;
+		 Global::toUnicode((*key).c_str(), CP_ACP, strOut3);
+        PRINTMSG(1, (L"\n%s%s: ", strOut2.c_str(), strOut3.c_str()));
+        if (!ComPrintSmartObject(object[(*key).c_str()])) {
+          PRINTMSG(1, (L"\n"));
+          return false;
+        }
+      }
+      break;
+    }
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Boolean:
+      object.asBool() ? PRINTMSG(1, (L"true\n")) : PRINTMSG(1, (L"false\n"));
+      break;
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Double: {
+      PRINTMSG(1, (L"%f", object.asDouble()));
+      break;
+    }
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Integer:
+      PRINTMSG(1, (L"%d", object.asInt()));
+      break;
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_String:
+		{
+		wchar_string strOut4;
+		 Global::toUnicode(object.asString().c_str(), CP_ACP, strOut4);
+      PRINTMSG(1, (L"%s", strOut4.c_str()));
+		}
+      break;
+    case NsSmartDeviceLink::NsSmartObjects::SmartType_Character:
+      PRINTMSG(1, (L"%c", object.asChar()));
+      break;
+    default:
+      PRINTMSG(1, (L"ComPrintSmartObject - default case\n"));
+      break;
+  }
+
+  if (0 != tab) {
+    --tab;
+  } else {
+    PRINTMSG(1, (L"\n-------------------------------------------------------------\n"));
+  }
+  return true;
+}
+#endif
 
 }  //  namespace application_manager

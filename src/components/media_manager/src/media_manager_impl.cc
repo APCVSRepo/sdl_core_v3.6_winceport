@@ -52,6 +52,9 @@
 #include "media_manager/video/pipe_video_streamer_adapter.h"
 #include "media_manager/audio/pipe_audio_streamer_adapter.h"
 #include "media_manager/video/video_stream_to_file_adapter.h"
+#ifdef SP_C9_PRIMA1
+#include "media_manager/video/sharedmem_video_streamer_adapter.h"
+#endif
 #ifdef MODIFY_FUNCTION_SIGN
 #include <iomanip>
 #endif
@@ -114,9 +117,37 @@ void MediaManagerImpl::Init() {
 #endif
 #endif
 
-#if /*defined(MODIFY_FUNCTION_SIGN) || */defined(OS_WIN32)
-  video_streamer_ = new VideoStreamToFileAdapter(
-	  profile::Profile::instance()->video_stream_file());
+#if defined(OS_WINCE)
+	if ("socket" == profile::Profile::instance()->video_server_type()) {
+		video_streamer_ = new SocketVideoStreamerAdapter();
+	}
+	else if ("pipe" == profile::Profile::instance()->video_server_type()) {
+
+	} else if ("file" == profile::Profile::instance()->video_server_type()) {
+		video_streamer_ = new VideoStreamToFileAdapter(
+			profile::Profile::instance()->video_stream_file());
+	}	else if ("sharedmem" == profile::Profile::instance()->video_server_type()) {
+#ifdef SP_C9_PRIMA1
+		video_streamer_ = new SharedMemVideoStreamerAdapter();
+#else
+		video_streamer_ = new VideoStreamToFileAdapter(
+			profile::Profile::instance()->video_stream_file());
+#endif
+	}
+
+  audio_streamer_ = new VideoStreamToFileAdapter(
+	  profile::Profile::instance()->audio_stream_file());
+#elif /*defined(MODIFY_FUNCTION_SIGN) || */defined(OS_WIN32)
+	if ("socket" == profile::Profile::instance()->video_server_type()) {
+		video_streamer_ = new SocketVideoStreamerAdapter();
+	}
+	else if ("pipe" == profile::Profile::instance()->video_server_type()) {
+
+	} else if ("file" == profile::Profile::instance()->video_server_type()) {
+		video_streamer_ = new VideoStreamToFileAdapter(
+			profile::Profile::instance()->video_stream_file());
+	}
+
   audio_streamer_ = new VideoStreamToFileAdapter(
 	  profile::Profile::instance()->audio_stream_file());
 #else
@@ -239,6 +270,7 @@ void MediaManagerImpl::StopMicrophoneRecording(int32_t application_key) {
 
 void MediaManagerImpl::StartVideoStreaming(int32_t application_key) {
   LOG4CXX_INFO(logger_, "MediaManagerImpl::StartVideoStreaming");
+  PRINTMSG(1, (L"MediaManagerImpl::StartVideoStreaming.\n "));
 
   if (video_streamer_) {
     if (!video_stream_active_) {
@@ -255,6 +287,11 @@ void MediaManagerImpl::StartVideoStreaming(int32_t application_key) {
       } else if ("pipe" == profile::Profile::instance()->video_server_type()) {
         snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
                  profile::Profile::instance()->named_video_pipe_path().c_str());
+#ifdef SP_C9_PRIMA1
+	  } else if("sharedmem" == profile::Profile::instance()->video_server_type()){
+		snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
+                 "sharedmem-video");
+#endif
       } else {
         DCHECK(snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
             profile::Profile::instance()->video_stream_file().c_str()));
@@ -267,6 +304,7 @@ void MediaManagerImpl::StartVideoStreaming(int32_t application_key) {
 
 void MediaManagerImpl::StopVideoStreaming(int32_t application_key) {
   LOG4CXX_INFO(logger_, "MediaManagerImpl::StopVideoStreaming");
+  PRINTMSG(1, (L"MediaManagerImpl::StopVideoStreaming.\n "));
   if (video_streamer_) {
     video_stream_active_ = false;
     application_manager::MessageHelper::SendNaviStopStream(application_key);
@@ -291,6 +329,11 @@ void MediaManagerImpl::StartAudioStreaming(int32_t application_key) {
       } else if ("pipe" == profile::Profile::instance()->audio_server_type()) {
         snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
                  profile::Profile::instance()->named_audio_pipe_path().c_str());
+#ifdef SP_C9_PRIMA1
+	  } else if("sharedmem" == profile::Profile::instance()->audio_server_type()){
+		snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
+                 "sharedmem-audio");
+#endif
       } else {
         DCHECK(snprintf(url, sizeof(url) / sizeof(url[0]), "%s",
              profile::Profile::instance()->audio_stream_file().c_str()));
@@ -322,14 +365,14 @@ void MediaManagerImpl::OnMessageReceived(
      }
     if (video_streamer_) {
 #ifdef MODIFY_FUNCTION_SIGN
-			std::ostringstream hexdata;
-      for (int i = 0; i < message.get()->data_size(); ++i) {
-        hexdata << " " << std::hex << std::setw(2) << std::setfill('0')
-                << (int)message.get()->data()[i];
-      }
-      LOG4CXX_TRACE(logger_, "video_streamer_->SendData, size:"
-                                 << message.get()->data_size()
-                                 << ", data:" << hexdata.str());
+			//std::ostringstream hexdata;
+   //   for (int i = 0; i < message.get()->data_size(); ++i) {
+   //     hexdata << " " << std::hex << std::setw(2) << std::setfill('0')
+   //             << (int)message.get()->data()[i];
+   //   }
+   //   LOG4CXX_TRACE(logger_, "video_streamer_->SendData, size:"
+   //                              << message.get()->data_size()
+   //                              << ", data:" << hexdata.str());
 #endif
       video_streamer_->SendData(message->connection_key(), message);
     }

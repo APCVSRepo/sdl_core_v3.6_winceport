@@ -1012,7 +1012,9 @@ uint32_t ApplicationManagerImpl::GenerateNewHMIAppID() {
 void ApplicationManagerImpl::ReplaceMobileByHMIAppId(
     smart_objects::SmartObject& message) {
   MessageHelper::PrintSmartObject(message);
+#ifndef BUILD_TARGET_LIB
   flush(std::cout);
+#endif
   if (message.keyExists(strings::app_id)) {
     ApplicationSharedPtr application =
         ApplicationManagerImpl::instance()->application(
@@ -1148,6 +1150,7 @@ void ApplicationManagerImpl::OnServiceEndedCallback(const int32_t& session_key,
       LOG4CXX_INFO(logger_, "Remove application.");
       UnregisterApplication(session_key, mobile_apis::Result::INVALID_ENUM,
                             false);
+		PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
       break;
     }
     case protocol_handler::kMobileNav: {
@@ -1418,6 +1421,7 @@ bool ApplicationManagerImpl::ManageMobileCommand(
         UnregisterApplication(connection_key,
                               mobile_apis::Result::TOO_MANY_PENDING_REQUESTS,
                               false);
+		PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
         return false;
       } else if (result ==
                  request_controller::RequestController::
@@ -1431,6 +1435,7 @@ bool ApplicationManagerImpl::ManageMobileCommand(
 
         UnregisterApplication(connection_key, mobile_apis::Result::INVALID_ENUM,
                               false);
+		PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
         return false;
       } else {
         LOG4CXX_ERROR_EXT(logger_, "Unable to perform request: Unknown case");
@@ -2152,6 +2157,7 @@ void ApplicationManagerImpl::UnregisterAllApplications() {
 
     UnregisterApplication((*it)->app_id(), mobile_apis::Result::INVALID_ENUM,
                           is_ignition_off);
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
     it = application_list_.begin();    
   }
   if (is_ignition_off) {
@@ -2164,6 +2170,7 @@ void ApplicationManagerImpl::UnregisterApplication(
   bool is_resuming) {
   LOG4CXX_INFO(logger_,
                "ApplicationManagerImpl::UnregisterApplication " << app_id);
+  PRINTMSG(1, (L"ApplicationManagerImpl::UnregisterApplication()\n"));
 
   switch (reason) {
     case mobile_apis::Result::DISALLOWED:

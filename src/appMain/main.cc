@@ -171,12 +171,6 @@ bool InitHmi() {
 
 }
 
-#ifdef BUILD_TARGET_LIB
-void sdl_stop(){
-	//main_namespace::LifeCycle::instance()->StopComponents();
-}
-#endif
-
 /**
  * \brief Entry point of the program.
  * \param argc number of argument
@@ -187,6 +181,19 @@ void sdl_stop(){
 int32_t main(int32_t argc, char** argv) {
 #else
 int32_t sdl_start(int32_t argc,char** argv){
+#endif
+
+#ifdef BUILD_TARGET_LIB
+// CSmartFactory.hpp
+NsSmartDeviceLink::NsJSONHandler::strings::S_MSG_PARAMS = "msg_params";
+NsSmartDeviceLink::NsJSONHandler::strings::S_PARAMS = "params";
+NsSmartDeviceLink::NsJSONHandler::strings::S_FUNCTION_ID = "function_id";
+NsSmartDeviceLink::NsJSONHandler::strings::S_MESSAGE_TYPE = "message_type";
+NsSmartDeviceLink::NsJSONHandler::strings::S_PROTOCOL_VERSION = "protocol_version";
+NsSmartDeviceLink::NsJSONHandler::strings::S_PROTOCOL_TYPE = "protocol_type";
+NsSmartDeviceLink::NsJSONHandler::strings::S_CORRELATION_ID = "correlation_id";
+NsSmartDeviceLink::NsJSONHandler::strings::kCode = "code";
+NsSmartDeviceLink::NsJSONHandler::strings::kMessage = "message";
 #endif
 
   // --------------------------------------------------------------------------
@@ -281,3 +288,14 @@ while (true) {
 #endif
 
 }
+
+#ifdef BUILD_TARGET_LIB
+void sdl_stop(){
+	//main_namespace::LifeCycle::instance()->StopComponents();
+}
+
+void sdl_set_videostream_callback(fun_SetMediaVideoStreamSendCallback func)
+{
+	SetMediaVideoStreamSendCallback(func);
+}
+#endif

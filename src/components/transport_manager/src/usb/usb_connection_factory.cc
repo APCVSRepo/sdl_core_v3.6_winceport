@@ -65,20 +65,28 @@ void UsbConnectionFactory::SetUsbHandler(const UsbHandlerSptr& usb_handler) {
 TransportAdapter::Error UsbConnectionFactory::CreateConnection(
     const DeviceUID& device_uid, const ApplicationHandle& app_handle) {
   DeviceSptr device = controller_->FindDevice(device_uid);
+	PRINTMSG(1, (L"DeviceSptr device = controller_->FindDevice(device_uid);\n"));
   if (!device.valid()) {
+	PRINTMSG(1, (L"if (!device.valid()) {\n"));
     LOG4CXX_ERROR(logger_, "device " << device_uid << " not found");
     return TransportAdapter::BAD_PARAM;
   }
 
+	PRINTMSG(1, (L"return TransportAdapter::BAD_PARAM; device=\n"));
   UsbDevice* usb_device = static_cast<UsbDevice*>(device.get());
+	PRINTMSG(1, (L"UsbDevice* usb_device = static_cast<UsbDevice*>(device.get());usb_device=%d\n", usb_device));
   UsbConnection* usb_connection =
     new UsbConnection(device_uid, app_handle, controller_, usb_handler_,
       usb_device->usb_device());
+	PRINTMSG(1, (L"new UsbConnection(device_uid, app_handle, controller_, usb_handler_,;\n"));
   ConnectionSptr connection(usb_connection);
 
+	PRINTMSG(1, (L"ConnectionSptr connection(usb_connection);\n"));
   controller_->ConnectionCreated(connection, device_uid, app_handle);
+	PRINTMSG(1, (L"controller_->ConnectionCreated(connection, device_uid, app_handle);\n"));
 
   if (usb_connection->Init()) {
+	PRINTMSG(1, (L"if (usb_connection->Init()) {\n"));
     LOG4CXX_INFO(logger_, "USB connection initialised");
     return TransportAdapter::OK;
   }

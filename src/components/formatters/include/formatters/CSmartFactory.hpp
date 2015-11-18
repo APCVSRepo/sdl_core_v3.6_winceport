@@ -49,6 +49,52 @@ namespace NsSmartDeviceLink
          */
         namespace strings
         {
+#ifdef BUILD_TARGET_LIB
+/**
+             * @brief String constant for MSG_PARAMS.
+             */
+            extern std::string S_MSG_PARAMS;
+
+            /**
+             * @brief String constant for PARAMS.
+             */
+            extern std::string S_PARAMS;
+
+            /**
+             * @brief String constant for FUNCTION_ID.
+             */
+            extern std::string S_FUNCTION_ID;
+
+            /**
+             * @brief String constant for MESSAGE_TYPE.
+             */
+            extern std::string S_MESSAGE_TYPE;
+
+            /**
+             * @brief String constant for PROTOCOL_VERSION.
+             */
+            extern std::string S_PROTOCOL_VERSION;
+
+            /**
+             * @brief String constant for PROTOCOL_TYPE.
+             */
+            extern std::string S_PROTOCOL_TYPE;
+
+            /**
+             * @brief String constant for CORRELATION_ID.
+             */
+            extern std::string S_CORRELATION_ID;
+
+          /**
+           * @brief String constant for "code" param name.
+           */
+          extern std::string kCode;
+
+          /**
+           * @brief String constant for "message" param name.
+           */
+          extern std::string kMessage;
+#else
             /**
              * @brief String constant for MSG_PARAMS.
              */
@@ -93,6 +139,7 @@ namespace NsSmartDeviceLink
            * @brief String constant for "message" param name.
            */
           extern const std::string kMessage;
+#endif
         }
 
         /**

@@ -45,6 +45,9 @@
 #ifdef OS_WINCE
 #include "utils/global.h"
 #endif
+#ifdef MODIFY_FUNCTION_SIGN
+#include "utils/macro.h"
+#endif
 #ifdef OS_WIN32
 void clock_gettime(int i, timespec * tm)
 {
@@ -103,6 +106,17 @@ TimevalStruct DateTime::getCurrentTime() {
 
   return currentTime;
 }
+
+
+#ifdef MODIFY_FUNCTION_SIGN
+void DateTime::getCurrentTimeString(std::string &strTime){
+	char timestr[40];
+	memset(timestr, 0, 40);
+	TimevalStruct ts = getCurrentTime();
+	snprintf(timestr, 40, "%d.%d", ts.tv_sec, ts.tv_usec);
+	strTime = timestr;
+}
+#endif
 
 int64_t DateTime::getmSecs(const TimevalStruct &time) {
   return static_cast<int64_t>(time.tv_sec) * MILLISECONDS_IN_SECOND

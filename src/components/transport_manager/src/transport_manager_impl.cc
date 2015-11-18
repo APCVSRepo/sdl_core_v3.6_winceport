@@ -286,6 +286,7 @@ int TransportManagerImpl::ReceiveEventFromDevice(
     const TransportAdapterEvent& event) {
   if (false == this->is_initialized_) {
     LOG4CXX_ERROR(logger_, "TM is not initialized.");
+	PRINTMSG(1, (L"\n%s, line:%d, false == this->is_initialized_\n", __FUNCTIONW__, __LINE__));
     return E_TM_IS_NOT_INITIALIZED;
   }
   this->PostEvent(event);
@@ -719,6 +720,7 @@ void TransportManagerImpl::EventListenerThread(void) {
         }
         case TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_DONE: {
           LOG4CXX_INFO(logger_, "Event ON_RECEIVED_DONE");
+			//PRINTMSG(1, (L"\n%s, line:%d, case TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_DONE\n", __FUNCTIONW__, __LINE__));
           if (connection == NULL) {
             LOG4CXX_ERROR(logger_, "Connection ('" << device_id << ", "
                                                    << app_handle

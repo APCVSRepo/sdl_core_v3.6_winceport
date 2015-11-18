@@ -139,11 +139,13 @@ TransportAdapter::Error TransportAdapterImpl::Connect(
     const DeviceUID& device_id, const ApplicationHandle& app_handle) {
   LOG4CXX_INFO(logger_,
                "enter TransportAdapter::Error TransportAdapterImpl::Connect");
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
   if (server_connection_factory_ == 0) {
     LOG4CXX_ERROR(logger_, "feature is NOT_SUPPORTED");
     return NOT_SUPPORTED;
   }
   if (!server_connection_factory_->IsInitialised()) {
+	PRINTMSG(1, (L"\n%s, line:%d, BAD_STATE\n", __FUNCTIONW__, __LINE__));
     LOG4CXX_ERROR(logger_, "BAD_STATE");
     return BAD_STATE;
   }
@@ -153,6 +155,7 @@ TransportAdapter::Error TransportAdapterImpl::Connect(
       connections_.end() !=
       connections_.find(std::make_pair(device_id, app_handle));
   if (!already_exists) {
+	PRINTMSG(1, (L"\n%s, line:%d, already_exists == false\n", __FUNCTIONW__, __LINE__));
     ConnectionInfo& info = connections_[std::make_pair(device_id, app_handle)];
     info.app_handle = app_handle;
     info.device_id = device_id;
@@ -163,12 +166,15 @@ TransportAdapter::Error TransportAdapterImpl::Connect(
     LOG4CXX_ERROR(logger_, "Connection for device " << device_id << ", channel "
                                                     << app_handle
                                                     << " already exists");
+	PRINTMSG(1, (L"\n%s, line:%d, already_exists == true\n", __FUNCTIONW__, __LINE__));
     return ALREADY_EXISTS;
   }
 
   const TransportAdapter::Error err =
       server_connection_factory_->CreateConnection(device_id, app_handle);
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
   if (TransportAdapter::OK != err) {
+	PRINTMSG(1, (L"\n%s, line:%d, TransportAdapter::OK != err\n", __FUNCTIONW__, __LINE__));
     pthread_mutex_lock(&connections_mutex_);
     connections_.erase(std::make_pair(device_id, app_handle));
     pthread_mutex_unlock(&connections_mutex_);
@@ -287,6 +293,7 @@ DeviceSptr TransportAdapterImpl::AddDevice(DeviceSptr device) {
 }
 
 void TransportAdapterImpl::SearchDeviceDone(const DeviceVector& devices) {
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
   DeviceMap new_devices;
   for (DeviceVector::const_iterator it = devices.begin(); it != devices.end();
        ++it) {
@@ -320,8 +327,10 @@ void TransportAdapterImpl::SearchDeviceDone(const DeviceVector& devices) {
   for (ConnectionMap::const_iterator it = connections_.begin();
        it != connections_.end(); ++it) {
     const ConnectionInfo& info = it->second;
-    if (info.state != ConnectionInfo::FINALISING)
+	if (info.state != ConnectionInfo::FINALISING){
+		PRINTMSG(1, (L"\n%s, line:%d, info.state != ConnectionInfo::FINALISING\n", __FUNCTIONW__, __LINE__));
       connected_devices.insert(info.device_id);
+	}
   }
   pthread_mutex_unlock(&connections_mutex_);
 
@@ -456,8 +465,9 @@ void TransportAdapterImpl::DataReceiveDone(const DeviceUID& device_id,
   }
 #endif  // TIME_TESTER
   for (TransportAdapterListenerList::iterator it = listeners_.begin();
-       it != listeners_.end(); ++it)
+	  it != listeners_.end(); ++it){
     (*it)->OnDataReceiveDone(this, device_id, app_handle, message);
+  }
 }
 
 void TransportAdapterImpl::DataReceiveFailed(

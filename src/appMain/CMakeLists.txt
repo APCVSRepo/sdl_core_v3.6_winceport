@@ -216,7 +216,11 @@ endif ()
 
 # Install rules
 if(CMAKE_SYSTEM_NAME STREQUAL "WindowsCE")
+if(BUILD_TARGET_LIBRARY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/smartDeviceLinkCore.dll" DESTINATION bin)
+else()
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/smartDeviceLinkCore.exe" DESTINATION bin)
+endif()
 else()
 install(TARGETS ${PROJECT} DESTINATION bin)
 endif()

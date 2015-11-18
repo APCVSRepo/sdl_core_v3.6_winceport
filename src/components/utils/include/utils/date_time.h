@@ -56,6 +56,10 @@ void clock_gettime(int i, timespec * tm);
 void clock_gettime(int i, timespec * tm);
 #endif
 
+#ifdef MODIFY_FUNCTION_SIGN
+#include <string>
+#endif
+
 namespace date_time {
 
 class DateTime {
@@ -64,6 +68,9 @@ class DateTime {
     static const int32_t MICROSECONDS_IN_MILLISECONDS = 1000;
 
     static TimevalStruct getCurrentTime();
+#ifdef MODIFY_FUNCTION_SIGN
+	static void getCurrentTimeString(std::string &strTime);
+#endif
 
     // return MILLISECONDS count
     static int64_t getmSecs(const TimevalStruct& time);

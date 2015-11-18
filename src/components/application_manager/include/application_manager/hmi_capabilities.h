@@ -50,8 +50,25 @@ class ApplicationManagerImpl;
 
 class HMICapabilities {
 
- public:
+#ifdef BUILD_TARGET_LIB
+private:
+	std::map<std::string, hmi_apis::Common_Language::eType> languages_enum_values;
+	std::map<std::string, hmi_apis::Common_VrCapabilities::eType> vr_enum_capabilities;
+	std::map<std::string, hmi_apis::Common_ButtonName::eType> button_enum_name;
+	std::map<std::string, hmi_apis::Common_TextFieldName::eType> text_fields_enum_name;
+	std::map<std::string, hmi_apis::Common_MediaClockFormat::eType> media_clock_enum_name;
+	std::map<std::string, hmi_apis::Common_ImageType::eType> image_type_enum;
+	std::map<std::string, hmi_apis::Common_SamplingRate::eType> sampling_rate_enum;
+	std::map<std::string, hmi_apis::Common_BitsPerSample::eType> bit_per_sample_enum;
+	std::map<std::string, hmi_apis::Common_AudioType::eType> audio_type_enum;
+	std::map<std::string, hmi_apis::Common_HmiZoneCapabilities::eType> hmi_zone_enum;
+	std::map<std::string, hmi_apis::Common_ImageFieldName::eType> image_field_name_enum;
+	std::map<std::string, hmi_apis::Common_FileType::eType> file_type_enum;
+	std::map<std::string, hmi_apis::Common_DisplayType::eType> display_type_enum;
+	std::map<std::string, hmi_apis::Common_CharacterSet::eType> character_set_enum;
+#endif
 
+ public:
   /*
    * @ Class constructor
    *

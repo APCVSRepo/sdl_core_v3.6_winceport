@@ -79,6 +79,7 @@ class ProtocolHandlerImpl::IncomingDataHandler {
     ConnectionsData::iterator it = connections_data_.find(connection_id);
     if (connections_data_.end() == it) {
       LOG4CXX_ERROR(logger_, "ProcessData requested for unknown connection");
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
       return false;
     }
     std::vector<uint8_t>& connection_data = it->second;
@@ -88,19 +89,20 @@ class ProtocolHandlerImpl::IncomingDataHandler {
                                << connection_id << " is "
                                << connection_data.size());
 #ifdef MODIFY_FUNCTION_SIGN
-		std::ostringstream hexdata;
-      for (int i = 0; i < connection_data.size(); ++i) {
-        hexdata << " " << std::hex << std::setw(2) << std::setfill('0')
-                << (int)connection_data[i];
-      }
-      LOG4CXX_TRACE(logger_, "ProcessData, connection_data size:"
-                                 << connection_data.size()
-                                 << ", data:" << hexdata.str());
+		//std::ostringstream hexdata;
+  //    for (int i = 0; i < connection_data.size(); ++i) {
+  //      hexdata << " " << std::hex << std::setw(2) << std::setfill('0')
+  //              << (int)connection_data[i];
+  //    }
+  //    LOG4CXX_TRACE(logger_, "ProcessData, connection_data size:"
+  //                               << connection_data.size()
+  //                               << ", data:" << hexdata.str());
 #endif
     while (connection_data.size() >= kBytesForSizeDetection) {
       const uint32_t packet_size = GetPacketSize(&connection_data[0]);
       if (0 == packet_size) {
         LOG4CXX_ERROR(logger_, "Failed to get packet size");
+	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
         return false;
       }
       LOG4CXX_TRACE(logger_, "Packet size " << packet_size);
@@ -448,6 +450,7 @@ void ProtocolHandlerImpl::OnTMMessageReceived(const RawMessagePtr tm_message) {
     LOG4CXX_ERROR(logger_,
                   "Incoming data processing failed. Terminating connection.");
     transport_manager_->DisconnectForce(tm_message->connection_key());
+  PRINTMSG(1, (L"transport_manager_->DisconnectForce(tm_message->connection_key());\n"));
   }
 
   for (std::vector<ProtocolFramePtr>::const_iterator it =
@@ -697,7 +700,7 @@ RESULT_CODE ProtocolHandlerImpl::HandleMessage(ConnectionID connection_id,
           logger_,
             "FRAME_TYPE_SINGLE message of size " << packet->data_size() << "; message "
             << ConvertPacketDataToString(packet->data(), packet->data_size()));
-
+	//PRINTMSG(1, (L"\n%s, line:%d, case FRAME_TYPE_SINGLE:\n", __FUNCTIONW__, __LINE__));
       if (!session_observer_) {
         LOG4CXX_ERROR(
             logger_,
@@ -860,6 +863,7 @@ RESULT_CODE ProtocolHandlerImpl::HandleControlMessageEndSession(
     ConnectionID connection_id, const ProtocolPacket& packet) {
   LOG4CXX_INFO(logger_,
                "ProtocolHandlerImpl::HandleControlMessageEndSession()");
+  PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
 
   uint8_t current_session_id = packet.session_id();
 
@@ -893,6 +897,7 @@ RESULT_CODE ProtocolHandlerImpl::HandleControlMessageEndSession(
     LOG4CXX_INFO_EXT(
         logger_,
         "Refused to end session " << packet.service_type() << " type.");
+	PRINTMSG(1, (L"\n%s, line:%d, SendEndSessionAck() fail\n", __FUNCTIONW__, __LINE__));
     SendEndSessionNAck(connection_id, current_session_id, packet.protocol_version(),
                        packet.service_type());
   }

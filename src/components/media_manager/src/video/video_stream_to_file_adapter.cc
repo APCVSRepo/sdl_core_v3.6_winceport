@@ -153,6 +153,7 @@ void VideoStreamToFileAdapter::Streamer::threadMain() {
 
       if (file_stream_) {
         file_system::Write(file_stream_, msg->data(), msg->data_size());
+			//PRINTMSG(1, (L"\n%s, line:%d, end file_system::Write()\n", __FUNCTIONW__, __LINE__));
 
         static int32_t messsages_for_session = 0;
         ++messsages_for_session;

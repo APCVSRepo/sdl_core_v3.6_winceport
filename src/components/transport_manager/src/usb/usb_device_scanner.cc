@@ -59,6 +59,12 @@ class AoaInitSequence : public UsbControlTransferSequence {
 };
 
 void UsbDeviceScanner::OnDeviceArrived(PlatformUsbDevice* device) {
+#ifdef SP_C9_PRIMA1
+	pthread_mutex_lock(&devices_mutex_);
+  devices_.push_back(device);
+  pthread_mutex_unlock(&devices_mutex_);
+  UpdateList();
+#else
   if (IsAppleDevice(device)) {
     SupportedDeviceFound(device);
   }
@@ -69,9 +75,16 @@ void UsbDeviceScanner::OnDeviceArrived(PlatformUsbDevice* device) {
       TurnIntoAccessoryMode(device);
     }
   }
+#endif
 }
 
 void UsbDeviceScanner::OnDeviceLeft(PlatformUsbDevice* device) {
+#ifdef SP_C9_PRIMA1
+  pthread_mutex_lock(&devices_mutex_);
+  devices_.clear();
+  pthread_mutex_unlock(&devices_mutex_);
+	UpdateList();
+#else
   bool list_changed = false;
   pthread_mutex_lock(&devices_mutex_);
   for (Devices::iterator it = devices_.begin(); it != devices_.end(); ++it) {
@@ -83,6 +96,7 @@ void UsbDeviceScanner::OnDeviceLeft(PlatformUsbDevice* device) {
   }
   pthread_mutex_unlock(&devices_mutex_);
   if (list_changed) UpdateList();
+#endif
 }
 
 UsbDeviceScanner::UsbDeviceScanner(TransportAdapterController* controller)
@@ -167,7 +181,10 @@ void UsbDeviceScanner::TurnIntoAccessoryMode(PlatformUsbDevice* device) {
 
 void UsbDeviceScanner::SupportedDeviceFound(PlatformUsbDevice* device) {
   LOG4CXX_INFO(logger_, "Supported device found");
+	PRINTMSG(1, (L"Supported device found"));
 
+#ifdef SP_C9_PRIMA1
+#else
   pthread_mutex_lock(&devices_mutex_);
   devices_.push_back(device);
   pthread_mutex_unlock(&devices_mutex_);
@@ -177,7 +194,9 @@ void UsbDeviceScanner::SupportedDeviceFound(PlatformUsbDevice* device) {
                             << static_cast<int>(device->address())
                             << ") identified as: " << device->GetManufacturer()
                             << ", " << device->GetProductName());
+#endif
   UpdateList();
+  PRINTMSG(1, (L"UsbDeviceScanner::UpdateList();\n"));
 }
 
 TransportAdapter::Error UsbDeviceScanner::Init() {
@@ -191,6 +210,13 @@ TransportAdapter::Error UsbDeviceScanner::Scan() {
 void UsbDeviceScanner::UpdateList() {
   DeviceVector device_vector;
   pthread_mutex_lock(&devices_mutex_);
+#ifdef SP_C9_PRIMA1
+  for (Devices::const_iterator it = devices_.begin(); it != devices_.end();
+     ++it) {
+	  DeviceSptr device(new UsbDevice(NULL, "ipod", "1"));
+	  device_vector.push_back(device);
+  }
+#else
   for (Devices::const_iterator it = devices_.begin(); it != devices_.end();
        ++it) {
     const std::string device_name =
@@ -204,6 +230,7 @@ void UsbDeviceScanner::UpdateList() {
     DeviceSptr device(new UsbDevice(*it, device_name, device_uid));
     device_vector.push_back(device);
   }
+#endif
   pthread_mutex_unlock(&devices_mutex_);
 
   LOG4CXX_INFO(logger_, "USB search done " << device_vector.size());
