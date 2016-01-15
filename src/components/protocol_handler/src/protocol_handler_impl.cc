@@ -463,7 +463,8 @@ void ProtocolHandlerImpl::OnTMMessageReceived(const RawMessagePtr tm_message) {
     }
 #endif  // TIME_TESTER
 
-    raw_ford_messages_from_mobile_.PostMessage(msg);
+    //raw_ford_messages_from_mobile_.PostMessage(msg);
+	Handle(msg);
   }
   LOG4CXX_TRACE_EXIT(logger_);
 }

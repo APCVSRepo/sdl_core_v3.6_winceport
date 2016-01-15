@@ -151,7 +151,8 @@ void SocketStreamerAdapter::SendData(
   }
 
   if (is_ready_) {
-    messages_.push(message);
+    //messages_.push(message);
+	streamer_->send(message);
   }
 }
 

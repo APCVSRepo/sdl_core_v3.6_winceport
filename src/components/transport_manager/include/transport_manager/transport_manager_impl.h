@@ -416,6 +416,8 @@ class TransportManagerImpl : public TransportManager {
    */
   void MessageQueueThread(void);
 
+  void ProcessMessageEvent(const TransportAdapterEvent& event);
+
   /**
    * @brief Launch EventListenerThread(void).
    */
