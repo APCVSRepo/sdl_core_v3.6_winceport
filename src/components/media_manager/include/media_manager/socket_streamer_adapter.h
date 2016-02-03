@@ -113,8 +113,8 @@ class SocketStreamerAdapter : public MediaAdapterImpl {
          */
         bool send(const protocol_handler::RawMessagePtr& msg);
 
-      private:
         SocketStreamerAdapter* const server_;
+	private:
         int32_t new_socket_fd_;
         bool is_first_loop_;
         volatile bool is_client_connected_;

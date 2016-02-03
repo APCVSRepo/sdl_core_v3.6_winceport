@@ -33,7 +33,6 @@
 #ifdef OS_WIN32
 #include <WinSock2.h>
 #include <ws2tcpip.h>
-
 #else
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -42,6 +41,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <fcntl.h>
 #endif
 #include <unistd.h>
 #include <string.h>
@@ -152,7 +152,16 @@ void SocketStreamerAdapter::SendData(
 
   if (is_ready_) {
     //messages_.push(message);
-	streamer_->send(message);
+    streamer_->send(message);
+	  static int32_t messsages_for_session = 0;
+	  ++messsages_for_session;
+
+	  std::set<MediaListenerPtr>::iterator it = streamer_->server_->media_listeners_
+		  .begin();
+	  for (; streamer_->server_->media_listeners_.end() != it; ++it) {
+		  (*it)->OnDataReceived(streamer_->server_->current_application_,
+			  messsages_for_session);
+	  }
   }
 }
 
@@ -198,7 +207,9 @@ void SocketStreamerAdapter::Streamer::threadMain() {
 #endif
       continue;
     }
-
+#ifdef OS_ANDROID  
+	fcntl(server_->socket_fd_,F_SETFL, O_NONBLOCK);
+#endif
     is_client_connected_ = true;
     is_first_loop_ = true;
     while (is_client_connected_) {
@@ -213,9 +224,9 @@ void SocketStreamerAdapter::Streamer::threadMain() {
         static int32_t messsages_for_session = 0;
         ++messsages_for_session;
 
-        LOG4CXX_INFO(logger, "Handling map streaming message. This is "
+       /* LOG4CXX_INFO(logger, "Handling map streaming message. This is "
             << messsages_for_session << " the message for "
-            << server_->current_application_);
+            << server_->current_application_);*/
         std::set<MediaListenerPtr>::iterator it = server_->media_listeners_
             .begin();
         for (; server_->media_listeners_.end() != it; ++it) {

@@ -73,8 +73,8 @@ class ProtocolHandlerImpl::IncomingDataHandler {
     const ConnectionID connection_id = tm_message->connection_key();
     const uint8_t* data = tm_message->data();
     const std::size_t size = tm_message->data_size();
-    LOG4CXX_TRACE(logger_, "Start of processing incoming data of size "
-                               << size << " for connection " << connection_id);
+    //LOG4CXX_TRACE(logger_, "Start of processing incoming data of size "
+                              // << size << " for connection " << connection_id);
     const uint32_t kBytesForSizeDetection = 8;
     ConnectionsData::iterator it = connections_data_.find(connection_id);
     if (connections_data_.end() == it) {
@@ -85,9 +85,9 @@ class ProtocolHandlerImpl::IncomingDataHandler {
     std::vector<uint8_t>& connection_data = it->second;
     connection_data.insert(connection_data.end(), data, data + size);
 
-    LOG4CXX_TRACE(logger_, "Total data size for connection "
-                               << connection_id << " is "
-                               << connection_data.size());
+    //LOG4CXX_TRACE(logger_, "Total data size for connection "
+                              // << connection_id << " is "
+                            //   << connection_data.size());
 #ifdef MODIFY_FUNCTION_SIGN
 		//std::ostringstream hexdata;
   //    for (int i = 0; i < connection_data.size(); ++i) {
@@ -105,16 +105,16 @@ class ProtocolHandlerImpl::IncomingDataHandler {
 	PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
         return false;
       }
-      LOG4CXX_TRACE(logger_, "Packet size " << packet_size);
+      //LOG4CXX_TRACE(logger_, "Packet size " << packet_size);
       if (connection_data.size() >= packet_size) {
         ProtocolFramePtr frame(new protocol_handler::ProtocolPacket(
             connection_id, &connection_data[0], packet_size));
         out_frames->push_back(frame);
         connection_data.erase(connection_data.begin(),
                               connection_data.begin() + packet_size);
-        LOG4CXX_TRACE(logger_,
-                      "Packet created and passed, new data size for connection "
-                          << connection_id << " is " << connection_data.size());
+       // LOG4CXX_TRACE(logger_,
+                     // "Packet created and passed, new data size for connection "
+                         // << connection_id << " is " << connection_data.size());
       } else {
         LOG4CXX_TRACE(logger_, "Packet data is not available yet");
         return true;
@@ -429,13 +429,10 @@ void ProtocolHandlerImpl::SendMessageToMobileApp(const RawMessagePtr& message,
 void ProtocolHandlerImpl::OnTMMessageReceived(const RawMessagePtr tm_message) {
   LOG4CXX_TRACE_ENTER(logger_);
 
-  if (tm_message) {
-    LOG4CXX_INFO_EXT(
-        logger_,
-        "Received from TM " << tm_message->data() << " with connection id "
-                            << tm_message->connection_key() << " msg data_size "
-                            << tm_message->data_size());
-  } else {
+  if (tm_message){
+		
+	}
+	else{
     LOG4CXX_ERROR(
         logger_,
         "Invalid incoming message received in"
@@ -697,10 +694,7 @@ RESULT_CODE ProtocolHandlerImpl::HandleMessage(ConnectionID connection_id,
       return HandleControlMessage(connection_id, packet);
     }
     case FRAME_TYPE_SINGLE: {
-      LOG4CXX_INFO(
-          logger_,
-            "FRAME_TYPE_SINGLE message of size " << packet->data_size() << "; message "
-            << ConvertPacketDataToString(packet->data(), packet->data_size()));
+     
 	//PRINTMSG(1, (L"\n%s, line:%d, case FRAME_TYPE_SINGLE:\n", __FUNCTIONW__, __LINE__));
       if (!session_observer_) {
         LOG4CXX_ERROR(

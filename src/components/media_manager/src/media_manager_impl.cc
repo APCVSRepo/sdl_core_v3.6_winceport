@@ -281,7 +281,12 @@ void MediaManagerImpl::StartVideoStreaming(int32_t application_key) {
 
 
       if ("socket" == profile::Profile::instance()->video_server_type()) {
-        snprintf(url, sizeof(url) / sizeof(url[0]), "http://%s:%d",
+        snprintf(url, sizeof(url) / sizeof(url[0]),
+#ifdef OS_ANDROID
+								 "tcp://%s:%d",
+#else
+								 "http://%s:%d",
+#endif
                  profile::Profile::instance()->server_address().c_str(),
                  profile::Profile::instance()->video_streaming_port());
       } else if ("pipe" == profile::Profile::instance()->video_server_type()) {

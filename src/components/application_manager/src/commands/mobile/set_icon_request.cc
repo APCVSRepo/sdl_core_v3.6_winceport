@@ -55,10 +55,12 @@ SetIconRequest::~SetIconRequest() {
 
 void SetIconRequest::Run() {
   LOG4CXX_INFO(logger_, "SetIconRequest::Run");
+  /*
 #ifdef MODIFY_FUNCTION_SIGN
   SendResponse(false, mobile_apis::Result::UNSUPPORTED_REQUEST);
   return;
 #endif
+*/
   ApplicationSharedPtr app =
       ApplicationManagerImpl::instance()->application(connection_key());
 
@@ -71,8 +73,9 @@ void SetIconRequest::Run() {
   const std::string& sync_file_name =
       (*message_)[strings::msg_params][strings::sync_file_name].asString();
 
+
   std::string full_file_path =
-      profile::Profile::instance()->app_storage_folder() + "/";
+	  profile::Profile::instance()->app_storage_folder() + "/";
   full_file_path += app->folder_name();
   full_file_path += "/";
   full_file_path += sync_file_name;

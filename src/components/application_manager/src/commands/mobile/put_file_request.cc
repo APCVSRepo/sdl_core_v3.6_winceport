@@ -59,12 +59,13 @@ PutFileRequest::~PutFileRequest() {
 
 void PutFileRequest::Run() {
   LOG4CXX_INFO(logger_, "PutFileRequest::Run");
-  
+
+  /*
 #ifdef MODIFY_FUNCTION_SIGN
   SendResponse(false, mobile_apis::Result::UNSUPPORTED_REQUEST);
   return;
 #endif
-
+*/
   ApplicationSharedPtr application =
       ApplicationManagerImpl::instance()->application(connection_key());
   smart_objects::SmartObject response_params = smart_objects::SmartObject(
@@ -160,8 +161,10 @@ void PutFileRequest::Run() {
     response_params[strings::space_available] = static_cast<int32_t>(
         ApplicationManagerImpl::instance()->GetAvailableSpaceForApp(application->name()));
 
-    file_path = profile::Profile::instance()->app_storage_folder();
-    file_path += "/" + application->folder_name();
+
+	file_path = profile::Profile::instance()->app_storage_folder();
+	file_path += "/" + application->folder_name();
+
 
     if (binary_data.size() >
       ApplicationManagerImpl::instance()->GetAvailableSpaceForApp(application->name())) {
@@ -173,10 +176,12 @@ void PutFileRequest::Run() {
     }
   }
 
+  LOG4CXX_ERROR(logger_, file_path.c_str());
+
   if (!file_system::CreateDirectoryRecursively(file_path)) {
-    LOG4CXX_ERROR(logger_, "Cann't create folder");
+	  LOG4CXX_ERROR(logger_, "Cann't create folder");
     SendResponse(false, mobile_apis::Result::GENERIC_ERROR,
-                 "Cann't create folder.",
+		"Cann't create folder.",
                  &response_params);
     return;
   }

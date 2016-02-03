@@ -163,29 +163,29 @@ std::string file_system::CreateDirectory(const std::string& name) {
 }
 
 bool file_system::CreateDirectoryRecursively(const std::string& path) {
-  size_t pos = 0;
-  bool ret_val = true;
+	size_t pos = 0;
+	bool ret_val = true;
 
-  while (ret_val == true && pos <= path.length()) {
-    pos = path.find('/', pos + 1);
-    if (!DirectoryExists(path.substr(0, pos))) {
+	while (ret_val == true && pos <= path.length()) {
+		pos = path.find('/', pos + 1);
+		if (!DirectoryExists(path.substr(0, pos))) {
 #ifdef OS_WIN32
 #ifdef OS_WINCE
-		wchar_string strUnicodeData;
-		Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
-	  if (0 != ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
+			wchar_string strUnicodeData;
+			Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
+			if (0 != ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
 #else
-      if (0 != ::CreateDirectory(path.substr(0, pos).c_str(), NULL)) {
+			if (0 == ::CreateDirectory(path.substr(0, pos).c_str(), NULL)) {
 #endif
 #else
-      if (0 != mkdir(path.substr(0, pos).c_str(), S_IRWXU)) {
+			if (0 != mkdir(path.substr(0, pos).c_str(), S_IRWXU)) {
 #endif
-        ret_val = false;
-      }
-    }
-  }
+				ret_val = false;
+			}
+		}
+	}
 
-  return ret_val;
+	return ret_val;
 }
 
 bool file_system::IsDirectory(const std::string& name) {

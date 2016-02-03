@@ -406,6 +406,7 @@ class TransportManagerImpl : public TransportManager {
 
   static void* MessageQueueStartThread(void* data);
 
+	void ProcessMessageEvent(const TransportAdapterEvent& event);
   /**
    * @brief Scan message's queue and pull messages according to priority and
    *serial number
@@ -415,8 +416,6 @@ class TransportManagerImpl : public TransportManager {
    * @see @ref components_transportmanager_client_connection_management
    */
   void MessageQueueThread(void);
-
-  void ProcessMessageEvent(const TransportAdapterEvent& event);
 
   /**
    * @brief Launch EventListenerThread(void).

@@ -703,7 +703,7 @@ void TransportManagerImpl::PostEvent(const TransportAdapterEvent& event) {
 
 void* TransportManagerImpl::EventListenerStartThread(void* data) {
   if (NULL != data) {
-    static_cast<TransportManagerImpl*>(data)->EventListenerThread();
+    //static_cast<TransportManagerImpl*>(data)->EventListenerThread();
   }
   return 0;
 }
