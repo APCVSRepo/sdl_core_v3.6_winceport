@@ -47,13 +47,7 @@
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
 
 #include "utils/logger.h"
-#ifdef MODIFY_FUNCTION_SIGN
-#ifdef ENABLE_LOG
-#include "utils/file_system.h"
-std::ofstream* file_stream_;
-#endif
-#endif
-	
+
 namespace transport_manager {
 namespace transport_adapter {
 
@@ -91,15 +85,6 @@ UsbConnection::UsbConnection(const DeviceUID& device_uid,
       waiting_in_transfer_cancel_(false),
       waiting_out_transfer_cancel_(false) {
   pthread_mutex_init(&out_messages_mutex_, 0);
-#ifdef MODIFY_FUNCTION_SIGN
-#ifdef ENABLE_LOG
-#  ifdef OS_ANDROID
-  file_stream_ = file_system::Open("/data/data_from_mobile_usb");
-#  else
-  file_stream_ = file_system::Open("/tmp/data_from_mobile_usb");
-#  endif
-#endif
-#endif
 }
 
 UsbConnection::~UsbConnection() {
@@ -111,11 +96,6 @@ UsbConnection::~UsbConnection() {
     delete[] in_buffer_;
   }
   pthread_mutex_destroy(&out_messages_mutex_);
-#ifdef MODIFY_FUNCTION_SIGN
-#ifdef ENABLE_LOG
-  file_system::Close(file_stream_);
-#endif
-#endif
 }
 
 void InTransferCallback(libusb_transfer* transfer) {
@@ -155,11 +135,6 @@ void UsbConnection::OnInTransfer(libusb_transfer* transfer) {
                                  << transfer->actual_length
                                  << ", data:" << hexdata.str());
     }
-#ifdef MODIFY_FUNCTION_SIGN
-#ifdef ENABLE_LOG
-  file_system::Write(file_stream_, in_buffer_, transfer->actual_length);
-#endif
-#endif
     RawMessageSptr data(new protocol_handler::RawMessage(
         0, 0, in_buffer_, transfer->actual_length));
   //PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
