@@ -54,11 +54,6 @@ DeleteFileRequest::~DeleteFileRequest() {
 void DeleteFileRequest::Run() {
   LOG4CXX_INFO(logger_, "DeleteFileRequest::Run");
 
-#ifdef MODIFY_FUNCTION_SIGN
-  SendResponse(false, mobile_apis::Result::UNSUPPORTED_REQUEST);
-  return;
-#endif
-
   ApplicationSharedPtr application =
       ApplicationManagerImpl::instance()->application(connection_key());
 

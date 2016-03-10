@@ -55,10 +55,7 @@ SetIconRequest::~SetIconRequest() {
 
 void SetIconRequest::Run() {
   LOG4CXX_INFO(logger_, "SetIconRequest::Run");
-#ifdef MODIFY_FUNCTION_SIGN
-  SendResponse(false, mobile_apis::Result::UNSUPPORTED_REQUEST);
-  return;
-#endif
+
   ApplicationSharedPtr app =
       ApplicationManagerImpl::instance()->application(connection_key());
 
