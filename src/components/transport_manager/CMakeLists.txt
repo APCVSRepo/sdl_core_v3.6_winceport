@@ -57,7 +57,7 @@ if (BUILD_USB_SUPPORT)
     ./src/usb/usb_connection_factory.cc
     ./src/usb/usb_device_scanner.cc
   )
-  if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android" OR CMAKE_SYSTEM_NAME STREQUAL "WindowsCE")
+  if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android" OR CMAKE_SYSTEM_NAME STREQUAL "WindowsCE" OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list (APPEND SOURCES
     ./src/usb/libusb/usb_handler.cc
     ./src/usb/libusb/usb_connection.cc

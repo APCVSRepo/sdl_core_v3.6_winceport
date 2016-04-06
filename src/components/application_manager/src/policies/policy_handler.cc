@@ -62,7 +62,11 @@ namespace policy {
 typedef std::set<utils::SharedPtr<application_manager::Application>> ApplicationList;
 
 PolicyHandler* PolicyHandler::instance_ = NULL;
+#ifdef OS_WIN32
+const std::string PolicyHandler::kLibrary = "Policy.dll";
+#else
 const std::string PolicyHandler::kLibrary = "libPolicy.so";
+#endif
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "PolicyHandler")
 

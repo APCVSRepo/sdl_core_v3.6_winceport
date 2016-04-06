@@ -99,7 +99,7 @@ TimevalStruct DateTime::getCurrentTime() {
 #ifdef OS_MAC
     struct timezone timeZone;
 #else
-  timezone timeZone;
+  struct timezone timeZone;
 #endif
   gettimeofday(&currentTime, &timeZone);
 #endif
