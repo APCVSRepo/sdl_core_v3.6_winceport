@@ -696,10 +696,10 @@ RESULT_CODE ProtocolHandlerImpl::HandleMessage(ConnectionID connection_id,
       return HandleControlMessage(connection_id, packet);
     }
     case FRAME_TYPE_SINGLE: {
-      LOG4CXX_INFO(
-          logger_,
+      /*LOG4CXX_INFO(
+         logger_,
             "FRAME_TYPE_SINGLE message of size " << packet->data_size() << "; message "
-            << ConvertPacketDataToString(packet->data(), packet->data_size()));
+            << ConvertPacketDataToString(packet->data(), packet->data_size()));*/
 	//PRINTMSG(1, (L"\n%s, line:%d, case FRAME_TYPE_SINGLE:\n", __FUNCTIONW__, __LINE__));
       if (!session_observer_) {
         LOG4CXX_ERROR(

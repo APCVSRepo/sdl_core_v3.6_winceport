@@ -129,10 +129,10 @@ void Global::toUnicode(const std::string &strSrc, unsigned int nCodePage, wchar_
 void Global::fromUnicode(const wchar_t *wstrSrc, unsigned int nCodePage, std::string &strOut)
 {
 #ifdef OS_WIN32
-	int nLength = WideCharToMultiByte(nCodePage, 0, wstrSrc, -1, NULL, 0, NULL, NULL);
+	int nLength = WideCharToMultiByte(nCodePage, 0, wstrSrc, -1, NULL, 0, NULL,FALSE);
 	strOut.clear();
 	strOut.resize(nLength);
-	WideCharToMultiByte(nCodePage, 0, wstrSrc, -1, &*strOut.begin(), nLength, NULL, NULL);
+	WideCharToMultiByte(nCodePage, 0, wstrSrc, -1, &*strOut.begin(), nLength, NULL,FALSE);
 	strOut.erase(--(strOut.end())); // remove last '\0'
 #endif
 }

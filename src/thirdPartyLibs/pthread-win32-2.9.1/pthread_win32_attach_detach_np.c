@@ -36,6 +36,28 @@
 
 #include "pthread.h"
 #include "implement.h"
+#include <Windows.h>
+
+#include <windows.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <winioctl.h>
+#include <winbase.h>
+
+#ifdef WINCE
+
+BOOL GetSystemDirectory(TCHAR szPath[],DWORD size)
+{
+	WCHAR *lpszPath;
+	GetModuleFileName(NULL,szPath,size);
+	lpszPath= wcsrchr(szPath, '\\');
+	if(lpszPath==NULL)
+		return FALSE;
+	*lpszPath = 0;
+	return TRUE;
+}
+#endif
 
 /*
  * Handle to quserex.dll 
@@ -47,9 +69,7 @@ pthread_win32_process_attach_np ()
 {
   TCHAR QuserExDLLPathBuf[1024];
   BOOL result = TRUE;
-#ifdef OS_WINCE
-  // do nothing
-#else // OS_WINCE
+
   result = ptw32_processInitialize ();
 
 #if defined(_UWIN)
@@ -83,7 +103,11 @@ pthread_win32_process_attach_np ()
 #else
   /* strncat is secure - this is just to avoid a warning */
   if(GetSystemDirectory(QuserExDLLPathBuf, sizeof(QuserExDLLPathBuf)) &&
+#ifdef UNICODE
+	 0 == wcsncat_s(QuserExDLLPathBuf, sizeof(QuserExDLLPathBuf), "\\QUSEREX.DLL", 12))
+#else
      0 == strncat_s(QuserExDLLPathBuf, sizeof(QuserExDLLPathBuf), "\\QUSEREX.DLL", 12))
+#endif
   {
     ptw32_h_quserex = LoadLibrary(QuserExDLLPathBuf);
   }
@@ -137,7 +161,6 @@ pthread_win32_process_attach_np ()
       ptw32_features |= PTW32_ALERTABLE_ASYNC_CANCEL;
     }
 
-#endif // OS_WINCE
   return result;
 }
 

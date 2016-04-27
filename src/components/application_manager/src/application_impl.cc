@@ -149,7 +149,7 @@ const std::string& ApplicationImpl::name() const {
 }
 
 const std::string ApplicationImpl::folder_name() const {
-  return name() + mobile_app_id()->asString();
+  return  mobile_app_id()->asString();
 }
 
 bool ApplicationImpl::is_media_application() const {

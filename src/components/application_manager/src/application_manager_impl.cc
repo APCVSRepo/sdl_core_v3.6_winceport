@@ -446,6 +446,7 @@ bool ApplicationManagerImpl::ActivateApplication(ApplicationSharedPtr app) {
     return false;
   }
 
+  sync_primitives::AutoLock lock(applications_list_lock_);
   bool is_new_app_media = app->is_media_application();
 
   for (std::set<ApplicationSharedPtr>::iterator it = application_list_.begin();

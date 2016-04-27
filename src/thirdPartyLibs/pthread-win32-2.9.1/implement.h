@@ -710,11 +710,7 @@ extern "C"
 #       endif
 #   endif
 #else
-#ifdef OS_WINCE
-  // do nothing
-#else // OS_WINCE
 #       include <process.h>
-#endif // OS_WINCE
 #   endif
 
 

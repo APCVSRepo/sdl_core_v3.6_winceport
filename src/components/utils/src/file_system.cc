@@ -147,7 +147,7 @@ uint32_t file_system::DirectorySize(const std::string& path) {
 std::string file_system::CreateDirectory(const std::string& name) {
 	if (!DirectoryExists(name)) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 		wchar_string strUnicodeData;
 		Global::toUnicode(name, CP_ACP, strUnicodeData);
 		::CreateDirectory(strUnicodeData.c_str(), NULL);
@@ -170,7 +170,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
     pos = path.find('/', pos + 1);
     if (!DirectoryExists(path.substr(0, pos))) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 		wchar_string strUnicodeData;
 		Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
 	  if (0 == ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
@@ -192,7 +192,7 @@ bool file_system::IsDirectory(const std::string& name) {
 #ifdef OS_WIN32
 	//bool b = ::SetCurrentDirectory(name.c_str()) == TRUE ? true : false;
 	//return b;
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(name, CP_ACP, strUnicodeData);
 	int fileAttri = GetFileAttributes(strUnicodeData.c_str());
@@ -219,7 +219,7 @@ bool file_system::IsDirectory(const std::string& name) {
 
 bool file_system::DirectoryExists(const std::string& name) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(name, CP_ACP, strUnicodeData);
 	int fileAttri = ::GetFileAttributes(strUnicodeData.c_str());
@@ -244,7 +244,7 @@ bool file_system::DirectoryExists(const std::string& name) {
 
 bool file_system::FileExists(const std::string& name) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(name, CP_ACP, strUnicodeData);
 	HANDLE file = ::CreateFile(strUnicodeData.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -324,12 +324,13 @@ bool file_system::Write(std::ofstream* const file_stream,
 void file_system::Close(std::ofstream* file_stream) {
   if (file_stream) {
     file_stream->close();
+	delete file_stream;
   }
 }
 
 std::string file_system::CurrentWorkingDirectory() {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_t szPath[MAX_PATH];
 	::GetModuleFileName( NULL, szPath, MAX_PATH );
 	wchar_t *lpszPath = wcsrchr(szPath, '\\');
@@ -355,12 +356,12 @@ std::string file_system::CurrentWorkingDirectory() {
   memset(path, 0, filename_max_lenght);
   snprintf(path, filename_max_lenght - 1, "%s", currentAppPath);
 #endif
-  return std::string(path);
+  return path;
 }
 
 bool file_system::DeleteFile(const std::string& name) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(name, CP_ACP, strUnicodeData);
 	return ::DeleteFile(strUnicodeData.c_str()) == TRUE ? true : false;
@@ -377,7 +378,7 @@ bool file_system::DeleteFile(const std::string& name) {
 
 void remove_directory_content(const std::string& directory_name) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(directory_name, CP_ACP, strUnicodeData);
 	::RemoveDirectory(strUnicodeData.c_str());
@@ -433,7 +434,7 @@ void remove_directory_content(const std::string& directory_name) {
 bool file_system::RemoveDirectory(const std::string& directory_name,
                                   bool is_recursively) {
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(directory_name, CP_ACP, strUnicodeData);
 	return ::RemoveDirectory(strUnicodeData.c_str()) == TRUE ? true : false;
@@ -466,7 +467,7 @@ std::vector<std::string> file_system::ListFiles(
   std::vector<std::string> listFiles;
 #ifdef OS_WIN32
   WIN32_FIND_DATA ffd;
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(directory_name, CP_ACP, strUnicodeData);
   HANDLE hFind = ::FindFirstFile(strUnicodeData.c_str(), &ffd);
@@ -488,7 +489,7 @@ std::vector<std::string> file_system::ListFiles(
 	  }
 	  else
 	  {
-#ifdef OS_WINCE
+#ifdef UNICODE
 		  std::string strData;
 		  Global::fromUnicode(ffd.cFileName, CP_ACP, strData);
 		  listFiles.push_back(strData.c_str());

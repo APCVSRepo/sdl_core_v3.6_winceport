@@ -30,7 +30,7 @@ ShareMemData   *shareData = NULL;
 #ifdef OS_WIN32
 typedef HANDLE  ShareMemHandle;
 #define SHARE_NULL   NULL
-#ifdef OS_WINCE
+#ifdef UNICODE
 #define  SHARE_MEM_NAME  reinterpret_cast<LPCWSTR>("Sdl_MspVRMem")
 #else
 #define  SHARE_MEM_NAME  "Sdl_MspVRMem"

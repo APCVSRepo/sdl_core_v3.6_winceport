@@ -216,7 +216,9 @@ bool Thread::Join(void** ret) {
   GetExitCodeThread(m_id, &val);
   CloseHandle(m_id);
   m_id = NULL;
-  *ret = (void*)val;
+  if (ret){
+	  *ret = (void*)val;
+  }
   return true;
 }
 
