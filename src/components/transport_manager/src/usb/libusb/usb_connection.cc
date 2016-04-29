@@ -98,19 +98,11 @@ UsbConnection::~UsbConnection() {
   pthread_mutex_destroy(&out_messages_mutex_);
 }
 
-void 
-#ifdef OS_WIN32
-LIBUSB_CALL
-#endif
-InTransferCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL InTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnInTransfer(transfer);
 }
 
-void 
-#ifdef OS_WIN32
-LIBUSB_CALL
-#endif
-OutTransferCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL OutTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnOutTransfer(transfer);
 }
 
