@@ -246,12 +246,13 @@ void UsbConnection::Finalise() {
   pthread_mutex_unlock(&out_messages_mutex_);
 
   while (waiting_in_transfer_cancel_ || waiting_out_transfer_cancel_) {
+   //the equivalent API  pthread_yield is Sleep(0) for windows and wince or usleep(0) for android
 #ifdef OS_ANDROID
-    usleep(150000);
+   usleep(150000);//150000us==150ms
 #elif defined(OS_WIN32)
-	  ::Sleep(150);
+   ::Sleep(150);//150ms
 #else
-    pthread_yield();
+   pthread_yield();
 #endif
   }
 }

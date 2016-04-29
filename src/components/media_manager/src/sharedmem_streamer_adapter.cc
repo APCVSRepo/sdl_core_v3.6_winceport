@@ -57,17 +57,17 @@ void AccessoryReceive(enumCallingProcess iMsgType, const BYTE* chBuff, int iBufL
 
 }
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "SharedMemStreamerAdapter")
+CREATE_LOGGERPTR_GLOBAL(logger, "SharedMemStreamerAdapter")
 
 SharedMemStreamerAdapter::SharedMemStreamerAdapter()
   : is_ready_(false),
     messages_(),
     thread_(NULL){
-  LOG4CXX_INFO(logger_, "SharedMemStreamerAdapter::SharedMemStreamerAdapter");
+  LOG4CXX_INFO(logger, "SharedMemStreamerAdapter::SharedMemStreamerAdapter");
 }
 
 SharedMemStreamerAdapter::~SharedMemStreamerAdapter() {
-  LOG4CXX_INFO(logger_, "SharedMemStreamerAdapter::~SharedMemStreamerAdapter");
+  LOG4CXX_INFO(logger, "SharedMemStreamerAdapter::~SharedMemStreamerAdapter");
 
   if ((0 != current_application_ ) && (is_ready_)) {
     StopActivity(current_application_);
@@ -80,10 +80,10 @@ SharedMemStreamerAdapter::~SharedMemStreamerAdapter() {
 void SharedMemStreamerAdapter::SendData(
   int32_t application_key,
   const protocol_handler::RawMessagePtr& message) {
-  LOG4CXX_INFO(logger_, "SharedMemStreamerAdapter::SendData");
+  LOG4CXX_INFO(logger, "SharedMemStreamerAdapter::SendData");
 
   if (application_key != current_application_) {
-    LOG4CXX_WARN(logger_, "Wrong application " << application_key);
+    LOG4CXX_WARN(logger, "Wrong application " << application_key);
     return;
   }
 
@@ -93,10 +93,10 @@ void SharedMemStreamerAdapter::SendData(
 }
 
 void SharedMemStreamerAdapter::StartActivity(int32_t application_key) {
-  LOG4CXX_INFO(logger_, "SharedMemStreamerAdapter::StartActivity");
+  LOG4CXX_INFO(logger, "SharedMemStreamerAdapter::StartActivity");
 
   if (application_key == current_application_) {
-    LOG4CXX_WARN(logger_, "Already started activity for " << application_key);
+    LOG4CXX_WARN(logger, "Already started activity for " << application_key);
     return;
   }
 
@@ -109,14 +109,14 @@ void SharedMemStreamerAdapter::StartActivity(int32_t application_key) {
     (*it)->OnActivityStarted(application_key);
   }
 
-  LOG4CXX_TRACE(logger_, "SharedMem opened for writing ");
+  LOG4CXX_INFO(logger, "SharedMem opened for writing ");
 }
 
 void SharedMemStreamerAdapter::StopActivity(int32_t application_key) {
-  LOG4CXX_INFO(logger_, "SharedMemStreamerAdapter::StopActivity");
+  LOG4CXX_INFO(logger, "SharedMemStreamerAdapter::StopActivity");
 
   if (application_key != current_application_) {
-    LOG4CXX_WARN(logger_, "Not performing activity for " << application_key);
+    LOG4CXX_WARN(logger, "Not performing activity for " << application_key);
     return;
   }
 
@@ -137,7 +137,7 @@ bool SharedMemStreamerAdapter::is_app_performing_activity(
 
 void SharedMemStreamerAdapter::Init() {
   if (!thread_) {
-    LOG4CXX_INFO(logger_, "Create and start sending thread");
+    LOG4CXX_INFO(logger, "Create and start sending thread");
     thread_ = new threads::Thread("SharedMemStreamerAdapter", new Streamer(this));
     const size_t kStackSize = 16384;
     thread_->startWithOptions(threads::ThreadOptions(kStackSize));
@@ -155,7 +155,7 @@ SharedMemStreamerAdapter::Streamer::~Streamer() {
 }
 
 void SharedMemStreamerAdapter::Streamer::threadMain() {
-  LOG4CXX_INFO(logger_, "Streamer::threadMain");
+  LOG4CXX_INFO(logger, "Streamer::threadMain");
 
   open();
 
@@ -163,7 +163,7 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
     while (!server_->messages_.empty()) {
       protocol_handler::RawMessagePtr msg = server_->messages_.pop();
       if (!msg) {
-        LOG4CXX_ERROR(logger_, "Null pointer message");
+        LOG4CXX_ERROR(logger, "Null pointer message");
         continue;
       }
 
@@ -190,8 +190,8 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
 			//PRINTMSG(1, (L"\n"));
 		}
 
-      if (ret == 0) {
-        LOG4CXX_ERROR(logger_, "Sharedmem Failed writing data to pipe "
+      if (0 == ret) {
+        LOG4CXX_ERROR(logger, "Sharedmem failed writing data to pipe "
                       );
 
         std::set<MediaListenerPtr>::iterator it =
@@ -200,14 +200,13 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
           (*it)->OnErrorReceived(server_->current_application_, -1);
         }
       } else if (ret != msg.get()->data_size()) {
-        LOG4CXX_WARN(logger_, "Couldn't write all the data to Sharemen "
-                     );
+        LOG4CXX_WARN(logger, "Couldn't write all the data to sharemem ");
       }
 
       static int32_t messsages_for_session = 0;
       ++messsages_for_session;
 
-      LOG4CXX_INFO(logger_, "Handling map streaming message. This is "
+      LOG4CXX_INFO(logger, "Handling map streaming message. This is "
                    << messsages_for_session << " the message for "
                    << server_->current_application_);
       std::set<MediaListenerPtr>::iterator it =
@@ -223,7 +222,7 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
 }
 
 bool SharedMemStreamerAdapter::Streamer::exitThreadMain() {
-  LOG4CXX_INFO(logger_, "Streamer::exitThreadMain");
+  LOG4CXX_INFO(logger, "Streamer::exitThreadMain");
   stop_flag_ = true;
   server_->messages_.Shutdown();
   return false;

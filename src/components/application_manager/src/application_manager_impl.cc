@@ -445,29 +445,16 @@ bool ApplicationManagerImpl::ActivateApplication(ApplicationSharedPtr app) {
     NOTREACHED();
     return false;
   }
-
-  sync_primitives::AutoLock lock(applications_list_lock_);
+  bool is_exist=false;
   bool is_new_app_media = app->is_media_application();
 
+  applications_list_lock_.Ackquire();
   for (std::set<ApplicationSharedPtr>::iterator it = application_list_.begin();
        application_list_.end() != it;
        ++it) {
     ApplicationSharedPtr curr_app = *it;
     if (app->app_id() == curr_app->app_id()) {
-      if (curr_app->IsFullscreen()) {
-        LOG4CXX_WARN(logger_, "Application is already active.");
-        return false;
-      }
-      if (mobile_api::HMILevel::eType::HMI_LIMITED !=
-          curr_app->hmi_level()) {
-        if (curr_app->has_been_activated()) {
-          MessageHelper::SendAppDataToHMI(curr_app);
-        }
-      }
-      if (!curr_app->MakeFullscreen()) {
-        return false;
-      }
-      MessageHelper::SendHMIStatusNotification(*curr_app);
+      is_exist=true; 
     } else {
       if (is_new_app_media) {
         if (curr_app->IsAudible()) {
@@ -479,6 +466,23 @@ bool ApplicationManagerImpl::ActivateApplication(ApplicationSharedPtr app) {
         MessageHelper::ResetGlobalproperties(curr_app);
       }
     }
+  }
+  applications_list_lock_.Release();
+  if (is_exist)  {
+    if (app->IsFullscreen()) {
+      LOG4CXX_WARN(logger_, "Application is already active.");
+      return false;
+    }
+    if (mobile_api::HMILevel::eType::HMI_LIMITED !=
+      app->hmi_level()) {
+      if (app->has_been_activated()) {
+        MessageHelper::SendAppDataToHMI(app);
+      }
+    }
+    if (!app->MakeFullscreen()) {
+      return false;
+    }
+    MessageHelper::SendHMIStatusNotification(*app);
   }
   return true;
 }

@@ -251,11 +251,7 @@ void* UsbHandlerThread(void* data) {
   return 0;
 }
 
-int 
-#ifdef OS_WIN32
-LIBUSB_CALL
-#endif
-ArrivedCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL ArrivedCallback(libusb_context* context, libusb_device* device,
                     libusb_hotplug_event event, void* data) {
   LOG4CXX_INFO(logger_, "libusb device arrived (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
@@ -267,11 +263,7 @@ ArrivedCallback(libusb_context* context, libusb_device* device,
   return 0;
 }
 
-int 
-#ifdef OS_WIN32
-LIBUSB_CALL
-#endif
-LeftCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL LeftCallback(libusb_context* context, libusb_device* device,
                  libusb_hotplug_event event, void* data) {
   LOG4CXX_INFO(logger_, "libusb device left (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
@@ -293,29 +285,28 @@ void* UsbHotPlugThread(void* data) {
 bool UsbHandler::IsUsbEqual(libusb_device *devd,libusb_device *devs)
 {
 #if defined(OS_WIN32) && !defined(OS_WINCE)
-	struct libusb_device_descriptor descd;
-	struct libusb_device_descriptor descs;
-	int statusd = libusb_get_device_descriptor(devd, &descd);
-	int statuss = libusb_get_device_descriptor(devs, &descs);
-	if (statusd >= 0 && statuss >= 0) {
-		uint16_t idVendord = descd.idVendor;
-		uint16_t idVendors = descs.idVendor;
-		uint16_t idProductd = descd.idProduct;
-		uint16_t idProducts = descs.idProduct;
-		if (idVendord == 0x18d1 || idVendors == 0x18d1){
-			printf("vid:%d\n", idVendord);
-		}
-		bool bolret = (idVendord == idVendors && idProductd == idProducts);
-		return bolret;
+  struct libusb_device_descriptor descd;
+  struct libusb_device_descriptor descs;
+  int statusd = libusb_get_device_descriptor(devd, &descd);
+  int statuss = libusb_get_device_descriptor(devs, &descs);
+  if (statusd >= 0 && statuss >= 0) {
+    uint16_t idVendord = descd.idVendor;
+	uint16_t idVendors = descs.idVendor;
+	uint16_t idProductd = descd.idProduct;
+	uint16_t idProducts = descs.idProduct;
+	if (idVendord == 0x18d1 || idVendors == 0x18d1) {
+		printf("vid:%d\n", idVendord);
 	}
-	return false;
+	bool bolret = (idVendord == idVendors && idProductd == idProducts);
+	return bolret;
+  }
+  return false;
 #else
-	int bus_number1=libusb_get_bus_number(devd);
-	int device_address1=libusb_get_device_address(devd);
-	int bus_number2=libusb_get_bus_number(devs);
-	int device_address2=libusb_get_device_address(devs);
-	
-	return (bus_number1==bus_number2 && device_address1==device_address2);
+  int bus_number1=libusb_get_bus_number(devd);
+  int device_address1=libusb_get_device_address(devd);
+  int bus_number2=libusb_get_bus_number(devs);
+  int device_address2=libusb_get_device_address(devs);
+  return (bus_number1==bus_number2 && device_address1==device_address2);
 #endif
 }
 
@@ -482,11 +473,7 @@ void UsbHandler::Thread() {
   }
 }
 
-void 
-#ifdef OS_WIN32
-LIBUSB_CALL
-#endif
-UsbTransferSequenceCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL UsbTransferSequenceCallback(libusb_transfer* transfer) {
   UsbHandler::ControlTransferSequenceState* sequence_state =
       static_cast<UsbHandler::ControlTransferSequenceState*>(transfer->user_data);
   sequence_state->usb_handler()->ControlTransferCallback(transfer);

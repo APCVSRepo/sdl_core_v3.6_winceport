@@ -49,13 +49,13 @@
 
 BOOL GetSystemDirectory(TCHAR szPath[],DWORD size)
 {
-	WCHAR *lpszPath;
-	GetModuleFileName(NULL,szPath,size);
-	lpszPath= wcsrchr(szPath, '\\');
-	if(lpszPath==NULL)
-		return FALSE;
-	*lpszPath = 0;
-	return TRUE;
+  WCHAR *lpszPath;
+  GetModuleFileName(NULL,szPath,size);
+  lpszPath= wcsrchr(szPath, '\\');
+  if(lpszPath==NULL)
+	return FALSE;
+  *lpszPath = 0;
+  return TRUE;
 }
 #endif
 
