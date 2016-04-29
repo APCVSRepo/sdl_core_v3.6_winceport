@@ -291,14 +291,14 @@ bool UsbHandler::IsUsbEqual(libusb_device *devd,libusb_device *devs)
   int statuss = libusb_get_device_descriptor(devs, &descs);
   if (statusd >= 0 && statuss >= 0) {
     uint16_t idVendord = descd.idVendor;
-	uint16_t idVendors = descs.idVendor;
-	uint16_t idProductd = descd.idProduct;
-	uint16_t idProducts = descs.idProduct;
-	if (idVendord == 0x18d1 || idVendors == 0x18d1) {
-		printf("vid:%d\n", idVendord);
-	}
-	bool bolret = (idVendord == idVendors && idProductd == idProducts);
-	return bolret;
+    uint16_t idVendors = descs.idVendor;
+    uint16_t idProductd = descd.idProduct;
+    uint16_t idProducts = descs.idProduct;
+    if (idVendord == 0x18d1 || idVendors == 0x18d1) {
+      printf("vid:%d\n", idVendord);
+    }
+    bool bolret = (idVendord == idVendors && idProductd == idProducts);
+    return bolret;
   }
   return false;
 #else
