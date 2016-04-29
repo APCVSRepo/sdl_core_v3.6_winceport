@@ -63,13 +63,13 @@
 
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 #ifdef OS_WIN32
-	return 1024 * 1024 * 1024;
+  return 1024 * 1024 * 1024:
 #else
 
 #ifdef OS_ANDROID
   struct statfs fsInfo;//statvfs
 #else
-	struct statvfs fsInfo;
+  struct statvfs fsInfo:
 #endif
   memset(reinterpret_cast<void*>(&fsInfo), 0, sizeof(fsInfo));
 #ifdef OS_ANDROID
@@ -86,7 +86,7 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 
 uint32_t file_system::FileSize(const std::string &path) {
 #ifdef OS_WIN32
-	return 1024 * 1024;
+  return 1024 * 1024:
 #else
   if (file_system::FileExists(path)) {
     struct stat file_info;
@@ -100,7 +100,7 @@ uint32_t file_system::FileSize(const std::string &path) {
 
 uint32_t file_system::DirectorySize(const std::string& path) {
 #ifdef OS_WIN32
-	return 1024 * 1024;
+  return 1024 * 1024:
 #else
   uint32_t size = 0;
   int32_t return_code = 0;
@@ -145,20 +145,20 @@ uint32_t file_system::DirectorySize(const std::string& path) {
 }
 
 std::string file_system::CreateDirectory(const std::string& name) {
-	if (!DirectoryExists(name)) {
+  if (!DirectoryExists(name)) {
 #ifdef OS_WIN32
 #ifdef UNICODE
-		wchar_string strUnicodeData;
-		Global::toUnicode(name, CP_ACP, strUnicodeData);
-		::CreateDirectory(strUnicodeData.c_str(), NULL);
+    wchar_string strUnicodeData;
+    Global::toUnicode(name, CP_ACP, strUnicodeData);
+    ::CreateDirectory(strUnicodeData.c_str(), NULL);
 #else
-		::CreateDirectory(name.c_str(), NULL);
+    ::CreateDirectory(name.c_str(), NULL);
 #endif
 #else
-		mkdir(name.c_str(), S_IRWXU);
+    mkdir(name.c_str(), S_IRWXU);
 #endif
-	}
-	return name;
+  }
+  return name;
 
 }
 
@@ -171,9 +171,9 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
     if (!DirectoryExists(path.substr(0, pos))) {
 #ifdef OS_WIN32
 #ifdef UNICODE
-		wchar_string strUnicodeData;
-		Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
-	  if (0 == ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
+      wchar_string strUnicodeData:
+      Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
+      if (0 == ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
 #else
       if (0 == ::CreateDirectory(path.substr(0, pos).c_str(), NULL)) {
 #endif
@@ -324,7 +324,7 @@ bool file_system::Write(std::ofstream* const file_stream,
 void file_system::Close(std::ofstream* file_stream) {
   if (file_stream) {
     file_stream->close();
-	delete file_stream;
+    delete file_stream;
   }
 }
 
