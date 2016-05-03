@@ -62,7 +62,11 @@ namespace policy {
 typedef std::set<utils::SharedPtr<application_manager::Application>> ApplicationList;
 
 PolicyHandler* PolicyHandler::instance_ = NULL;
+#ifdef OS_WIN32
+const std::string PolicyHandler::kLibrary = "Policy.dll";
+#else
 const std::string PolicyHandler::kLibrary = "libPolicy.so";
+#endif
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "PolicyHandler")
 
@@ -86,7 +90,7 @@ PolicyManager* PolicyHandler::LoadPolicyLibrary() {
   }
 
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	wchar_string strUnicodeData;
 	Global::toUnicode(kLibrary, CP_ACP, strUnicodeData);
 	dl_handle_ = LoadLibrary(strUnicodeData.c_str());
@@ -123,7 +127,7 @@ PolicyManager* PolicyHandler::CreateManager() {
   typedef PolicyManager* (*CreateManager)();
   CreateManager create_manager = 0;
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
 	*(void**)(&create_manager) = GetProcAddress(dl_handle_, L"CreateManager");
 #else
 	*(void**)(&create_manager) = GetProcAddress(dl_handle_, "CreateManager");

@@ -98,11 +98,11 @@ UsbConnection::~UsbConnection() {
   pthread_mutex_destroy(&out_messages_mutex_);
 }
 
-void InTransferCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL InTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnInTransfer(transfer);
 }
 
-void OutTransferCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL OutTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnOutTransfer(transfer);
 }
 
@@ -121,20 +121,7 @@ bool UsbConnection::PostInTransfer() {
 
 void UsbConnection::OnInTransfer(libusb_transfer* transfer) {
   if (transfer->status == LIBUSB_TRANSFER_COMPLETED) {
-#ifndef OS_ANDROID
-    if (LOG4CXX_IS_TRACE_ENABLED(logger_)) {
-#else
-{
-#endif
-      std::ostringstream hexdata;
-      for (int i = 0; i < transfer->actual_length; ++i) {
-        hexdata << " " << std::hex << std::setw(2) << std::setfill('0')
-                << (int)transfer->buffer[i];
-      }
-      LOG4CXX_TRACE(logger_, "USB incoming transfer, size:"
-                                 << transfer->actual_length
-                                 << ", data:" << hexdata.str());
-    }
+
     RawMessageSptr data(new protocol_handler::RawMessage(
         0, 0, in_buffer_, transfer->actual_length));
   //PRINTMSG(1, (L"\n%s, line:%d\n", __FUNCTIONW__, __LINE__));
@@ -251,12 +238,13 @@ void UsbConnection::Finalise() {
   pthread_mutex_unlock(&out_messages_mutex_);
 
   while (waiting_in_transfer_cancel_ || waiting_out_transfer_cancel_) {
+   //the equivalent API  pthread_yield is Sleep(0) for windows and wince or usleep(0) for android
 #ifdef OS_ANDROID
-    usleep(150000);
-#elif defined(OS_WINCE)
-	  ::Sleep(150);
+   usleep(150000);//150000us==150ms
+#elif defined(OS_WIN32)
+   ::Sleep(150);//150ms
 #else
-    pthread_yield();
+   pthread_yield();
 #endif
   }
 }

@@ -693,11 +693,11 @@ extern "C"
 
 
 #if defined(_UWIN_)
-#   if defined(_MT)
-#       if defined(__cplusplus)
+#if defined(_MT)
+#if defined(__cplusplus)
 extern "C"
 {
-#       endif
+#endif
   _CRTIMP unsigned long __cdecl _beginthread (void (__cdecl *) (void *),
 					      unsigned, void *);
   _CRTIMP void __cdecl _endthread (void);
@@ -705,17 +705,13 @@ extern "C"
 						unsigned (__stdcall *) (void *),
 						void *, unsigned, unsigned *);
   _CRTIMP void __cdecl _endthreadex (unsigned);
-#       if defined(__cplusplus)
+#if defined(__cplusplus)
 }
-#       endif
-#   endif
+#endif
+#endif
 #else
-#ifdef OS_WINCE
-  // do nothing
-#else // OS_WINCE
-#       include <process.h>
-#endif // OS_WINCE
-#   endif
+#include <process.h>
+#endif
 
 
 /*

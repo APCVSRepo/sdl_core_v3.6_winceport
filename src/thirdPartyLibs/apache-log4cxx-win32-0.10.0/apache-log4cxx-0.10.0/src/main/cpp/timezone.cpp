@@ -116,6 +116,7 @@ namespace log4cxx
 
         static const LogString getTimeZoneName()
         {
+#ifndef OS_WINCE
           const int MAX_TZ_LENGTH = 255;
           char tzName[MAX_TZ_LENGTH];
           apr_size_t tzLength;
@@ -129,6 +130,12 @@ namespace log4cxx
           LogString retval;
           log4cxx::helpers::Transcoder::decode(tzName, retval);
           return retval;
+#else
+			char tzName[255] = {"GMT"};
+			LogString retval;
+			log4cxx::helpers::Transcoder::decode(tzName, retval);
+			return retval;
+#endif
         }
 
       };

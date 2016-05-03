@@ -279,7 +279,7 @@ CMessageBroker_Private::CMessageBroker_Private() :
   mpSender(NULL) {
   mpRegistry = CMessageBrokerRegistry::getInstance();
 #ifdef OS_WIN32
-#ifdef OS_WINCE
+#ifdef UNICODE
   m_messageQueueSemaphore = ::CreateEvent(0, false, false, L"messagebroker-private");
 #else
   m_messageQueueSemaphore = ::CreateEvent(0, false, false, "messagebroker-private");

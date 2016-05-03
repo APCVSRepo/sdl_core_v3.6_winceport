@@ -194,7 +194,7 @@ void VideoStreamToFileAdapter::Streamer::open() {
 void VideoStreamToFileAdapter::Streamer::close() {
   if (file_stream_) {
     file_system::Close(file_stream_);
-    delete file_stream_;
+    //delete file_stream_;
     file_stream_ = NULL;
   }
   file_system::DeleteFile(server_->file_name_);

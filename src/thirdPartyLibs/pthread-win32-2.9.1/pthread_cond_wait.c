@@ -382,16 +382,10 @@ ptw32_cond_timedwait (pthread_cond_t * cond,
   cv = *cond;
 
   /* Thread can be cancelled in sem_wait() but this is OK */
-  /*
-   * Modifier: patrick.pan
-   * Thread is blocked
-  */
-#ifndef OS_WINCE
   if (sem_wait (&(cv->semBlockLock)) != 0)
     {
       return errno;
     }
-#endif
 
   ++(cv->nWaitersBlocked);
 

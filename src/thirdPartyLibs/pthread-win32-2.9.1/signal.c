@@ -84,7 +84,7 @@
 #include "pthread.h"
 #include "implement.h"
 
-#if defined(HAVE_SIGSET_T)
+#if HAVE_SIGSET_T
 
 static void
 ptw32_signal_thread ()

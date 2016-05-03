@@ -109,7 +109,7 @@ void SharedMemStreamerAdapter::StartActivity(int32_t application_key) {
     (*it)->OnActivityStarted(application_key);
   }
 
-  LOG4CXX_TRACE(logger, "Pipe was opened for writing " << named_pipe_path_);
+  LOG4CXX_INFO(logger, "SharedMem opened for writing ");
 }
 
 void SharedMemStreamerAdapter::StopActivity(int32_t application_key) {
@@ -190,9 +190,9 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
 			//PRINTMSG(1, (L"\n"));
 		}
 
-      if (ret == 0) {
-        LOG4CXX_ERROR(logger, "Failed writing data to pipe "
-                      << server_->named_pipe_path_);
+      if (0 == ret) {
+        LOG4CXX_ERROR(logger, "Sharedmem failed writing data to pipe "
+                      );
 
         std::set<MediaListenerPtr>::iterator it =
             server_->media_listeners_.begin();
@@ -200,8 +200,7 @@ void SharedMemStreamerAdapter::Streamer::threadMain() {
           (*it)->OnErrorReceived(server_->current_application_, -1);
         }
       } else if (ret != msg.get()->data_size()) {
-        LOG4CXX_WARN(logger, "Couldn't write all the data to pipe "
-                     << server_->named_pipe_path_);
+        LOG4CXX_WARN(logger, "Couldn't write all the data to sharemem ");
       }
 
       static int32_t messsages_for_session = 0;

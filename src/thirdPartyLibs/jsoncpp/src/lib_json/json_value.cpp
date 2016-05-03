@@ -481,6 +481,7 @@ Value::~Value()
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    case arrayValue:
    case objectValue:
+	   OutputDebugString(L"delete map_\n");
       delete value_.map_;
       break;
 #else

@@ -24,7 +24,9 @@
 #error ERROR: Only Win32 targets supported!
 #endif
 
-#include <winsock.h>
+#ifndef _WINSOCKAPI_
+#include <winsock2.h>
+#endif
 
 #if defined(__cplusplus)
 extern "C" {

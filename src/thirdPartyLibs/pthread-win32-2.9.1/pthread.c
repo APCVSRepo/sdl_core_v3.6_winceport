@@ -38,11 +38,6 @@
 #include "pthread.h"
 #include "implement.h"
 
-#ifdef OS_WINCE
-//void __cdecl main(struct HINSTANCE__ *h,unsigned short const *i)
-//{}
-#endif // OS_WINCE
-
 /* The following are ordered for inlining */
 
 #include "private.c"

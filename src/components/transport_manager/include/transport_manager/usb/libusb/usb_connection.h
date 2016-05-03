@@ -61,8 +61,10 @@ class UsbConnection : public Connection {
   virtual TransportAdapter::Error Disconnect();
 
  private:
-  friend void InTransferCallback(struct libusb_transfer*);
-  friend void OutTransferCallback(struct libusb_transfer*);
+  
+  friend void LIBUSB_CALL InTransferCallback(struct libusb_transfer*);
+  friend void LIBUSB_CALL OutTransferCallback(struct libusb_transfer*);
+		
   bool FindEndpoints();
   void PopOutMessage();
   bool PostInTransfer();

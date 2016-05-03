@@ -68,7 +68,7 @@ void CommandNotificationImpl::SendNotification() {
 
   LOG4CXX_INFO(logger_, "SendNotification");
 #ifndef OS_MAC
-  MessageHelper::PrintSmartObject(*message_);
+ // MessageHelper::PrintSmartObject(*message_);
 #endif
   ApplicationManagerImpl::instance()->SendMessageToMobile(message_);
 }

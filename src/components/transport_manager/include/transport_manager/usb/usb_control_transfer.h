@@ -47,7 +47,7 @@ class UsbControlOutTransfer;
 class UsbControlTransfer {
  public:
   enum TransferDirection {
-#ifdef OS_WINCE
+#ifdef OS_WIN32
 	TD_IN,
     TD_OUT
 #else
@@ -73,7 +73,7 @@ class UsbControlInTransfer : public UsbControlTransfer {
  public:
   virtual ~UsbControlInTransfer() {}
   virtual TransferDirection Direction() const { 
-#ifdef OS_WINCE
+#ifdef OS_WIN32
 	  return TD_IN;
 #else
 	  return IN; 
@@ -86,7 +86,7 @@ class UsbControlOutTransfer : public UsbControlTransfer {
  public:
   virtual ~UsbControlOutTransfer() {}
   virtual TransferDirection Direction() const { 
-#ifdef OS_WINCE
+#ifdef OS_WIN32
 	  return TD_OUT;
 #else
 	  return OUT; 

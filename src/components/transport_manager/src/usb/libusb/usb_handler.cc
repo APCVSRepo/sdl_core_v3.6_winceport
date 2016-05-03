@@ -43,7 +43,7 @@
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
 
 #include "utils/logger.h"
-#ifdef OS_WINCE
+#ifdef OS_WIN32
 #include<vector>
 #include<iostream>
 #endif
@@ -155,7 +155,7 @@ void UsbHandler::DeviceArrived(libusb_device* device_libusb) {
        return;
     }
   }
-#if  defined(OS_ANDROID) || defined(OS_WINCE)
+#if  defined(OS_ANDROID) || defined(OS_WIN32)
   if(libusb_kernel_driver_active(device_handle_libusb,1)==1){
 		LOG4CXX_INFO(logger_, "libusb_kernel_driver_active:detach the usb driver");
 		libusb_detach_kernel_driver(device_handle_libusb,1);
@@ -251,7 +251,7 @@ void* UsbHandlerThread(void* data) {
   return 0;
 }
 
-int ArrivedCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL ArrivedCallback(libusb_context* context, libusb_device* device,
                     libusb_hotplug_event event, void* data) {
   LOG4CXX_INFO(logger_, "libusb device arrived (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
@@ -263,7 +263,7 @@ int ArrivedCallback(libusb_context* context, libusb_device* device,
   return 0;
 }
 
-int LeftCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL LeftCallback(libusb_context* context, libusb_device* device,
                  libusb_hotplug_event event, void* data) {
   LOG4CXX_INFO(logger_, "libusb device left (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
@@ -275,7 +275,7 @@ int LeftCallback(libusb_context* context, libusb_device* device,
   return 0;
 }
 
-#ifdef OS_WINCE
+#ifdef OS_WIN32
 void* UsbHotPlugThread(void* data) {
   static_cast<UsbHandler*>(data)->UsbThread();
 	
@@ -284,12 +284,30 @@ void* UsbHotPlugThread(void* data) {
 
 bool UsbHandler::IsUsbEqual(libusb_device *devd,libusb_device *devs)
 {
-	int bus_number1=libusb_get_bus_number(devd);
-	int device_address1=libusb_get_device_address(devd);
-	int bus_number2=libusb_get_bus_number(devs);
-	int device_address2=libusb_get_device_address(devs);
-	
-	return (bus_number1==bus_number2 && device_address1==device_address2);
+#if defined(OS_WIN32) && !defined(OS_WINCE)
+  struct libusb_device_descriptor descd;
+  struct libusb_device_descriptor descs;
+  int statusd = libusb_get_device_descriptor(devd, &descd);
+  int statuss = libusb_get_device_descriptor(devs, &descs);
+  if (statusd >= 0 && statuss >= 0) {
+    uint16_t idVendord = descd.idVendor;
+    uint16_t idVendors = descs.idVendor;
+    uint16_t idProductd = descd.idProduct;
+    uint16_t idProducts = descs.idProduct;
+    if (idVendord == 0x18d1 || idVendors == 0x18d1) {
+      printf("vid:%d\n", idVendord);
+    }
+    bool bolret = (idVendord == idVendors && idProductd == idProducts);
+    return bolret;
+  }
+  return false;
+#else
+  int bus_number1=libusb_get_bus_number(devd);
+  int device_address1=libusb_get_device_address(devd);
+  int bus_number2=libusb_get_bus_number(devs);
+  int device_address2=libusb_get_device_address(devs);
+  return (bus_number1==bus_number2 && device_address1==device_address2);
+#endif
 }
 
 void UsbHandler::UsbThread(){
@@ -322,11 +340,7 @@ void UsbHandler::UsbThread(){
 
 		for(int i=0;i<leftDevs.size();i++){
 			libusb_device *device=leftDevs[i];
-			std::cout<<"libusb device left (bus number "
-                            << static_cast<int>(libusb_get_bus_number(device))
-                            << ", device address "
-                            << static_cast<int>(
-                                   libusb_get_device_address(device)) << ")";
+
 			LOG4CXX_INFO(logger_, "libusb device left (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
                             << ", device address "
@@ -351,11 +365,7 @@ void UsbHandler::UsbThread(){
 		//
 		for(int i=0;i<arriveDevs.size();i++){
 			libusb_device *device=arriveDevs[i];
-			std::cout<< "libusb device arrived (bus number "
-                            << static_cast<int>(libusb_get_bus_number(device))
-                            << ", device address "
-                            << static_cast<int>(
-                                   libusb_get_device_address(device)) << ")";
+
 			LOG4CXX_INFO(logger_, "libusb device arrived (bus number "
                             << static_cast<int>(libusb_get_bus_number(device))
                             << ", device address "
@@ -383,7 +393,7 @@ TransportAdapter::Error UsbHandler::Init() {
   }
 
  
-#ifdef OS_WINCE
+#ifdef OS_WIN32
   pthread_t plug_thread;
   const int thread_plug_error =
       pthread_create(&plug_thread, 0, &UsbHotPlugThread, this);
@@ -463,7 +473,7 @@ void UsbHandler::Thread() {
   }
 }
 
-void UsbTransferSequenceCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL UsbTransferSequenceCallback(libusb_transfer* transfer) {
   UsbHandler::ControlTransferSequenceState* sequence_state =
       static_cast<UsbHandler::ControlTransferSequenceState*>(transfer->user_data);
   sequence_state->usb_handler()->ControlTransferCallback(transfer);
@@ -485,13 +495,13 @@ void UsbHandler::SubmitControlTransfer(
   const libusb_request_type request_type = LIBUSB_REQUEST_TYPE_VENDOR;
 
   libusb_endpoint_direction endpoint_direction;
-#ifdef OS_WINCE
+#ifdef OS_WIN32
   if (transfer->Direction() == UsbControlTransfer::TD_IN) {
 #else
   if (transfer->Direction() == UsbControlTransfer::IN) {
 #endif
     endpoint_direction = LIBUSB_ENDPOINT_IN;
-#ifdef OS_WINCE
+#ifdef OS_WIN32
   } else if (transfer->Direction() == UsbControlTransfer::TD_OUT) {
 #else
   } else if (transfer->Direction() == UsbControlTransfer::OUT) {
@@ -543,7 +553,7 @@ void UsbHandler::ControlTransferCallback(libusb_transfer* transfer) {
     UsbControlTransfer* current_transfer = sequence_state->CurrentTransfer();
     bool submit_next = true;
     if (current_transfer &&
-#ifdef OS_WINCE
+#ifdef OS_WIN32
         current_transfer->Direction() == UsbControlTransfer::TD_IN) {
 #else
         current_transfer->Direction() == UsbControlTransfer::IN) {
