@@ -69,7 +69,7 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 #ifdef OS_ANDROID
   struct statfs fsInfo;//statvfs
 #else
-  struct statvfs fsInfo:
+  struct statvfs fsInfo;
 #endif
   memset(reinterpret_cast<void*>(&fsInfo), 0, sizeof(fsInfo));
 #ifdef OS_ANDROID
