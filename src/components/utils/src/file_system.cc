@@ -63,7 +63,7 @@
 
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 #ifdef OS_WIN32
-  return 1024 * 1024 * 1024:
+  return 1024 * 1024 * 1024;
 #else
 
 #ifdef OS_ANDROID
@@ -86,7 +86,7 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 
 uint32_t file_system::FileSize(const std::string &path) {
 #ifdef OS_WIN32
-  return 1024 * 1024:
+  return 1024 * 1024;
 #else
   if (file_system::FileExists(path)) {
     struct stat file_info;
@@ -100,7 +100,7 @@ uint32_t file_system::FileSize(const std::string &path) {
 
 uint32_t file_system::DirectorySize(const std::string& path) {
 #ifdef OS_WIN32
-  return 1024 * 1024:
+  return 1024 * 1024;
 #else
   uint32_t size = 0;
   int32_t return_code = 0;
@@ -171,7 +171,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
     if (!DirectoryExists(path.substr(0, pos))) {
 #ifdef OS_WIN32
 #ifdef UNICODE
-      wchar_string strUnicodeData:
+      wchar_string strUnicodeData;
       Global::toUnicode(path.substr(0, pos), CP_ACP, strUnicodeData);
       if (0 == ::CreateDirectory(strUnicodeData.c_str(), NULL)) {
 #else
